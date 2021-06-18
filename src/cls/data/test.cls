@@ -21,6 +21,8 @@ Property Timestamp As %TimeStamp;
 
 Property Boolean As %Boolean;
 
+Property extension As %String [ InitialExpression = ".pdf" ];
+
 Index StringIndex On String;
 
 Index BStreamIndex On BStream;
@@ -61,14 +63,14 @@ ClassMethod CStreamPop() As %Stream.GlobalCharacter
     return stream
 }
 
-ClassMethod extractBinary(id As %Integer, directory As %String = "tmp") As %Status
+ClassMethod extractBinary(id As %Integer, extension As %String = "pdf", directory As %String = "tmp") As %Status
 {
     set sc=$$$OK
     if ..%ExistsId(id) {
         set data=..%OpenId(id)
         set directory=##class(%File).NormalizeDirectory($system.Util.DataDirectory()_directory)
         do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
-        set filename=directory_id_"_BStream.jpg"
+        set filename=directory_id_"_BStream."_extension
         set file=##class(%Stream.FileBinary).%New()
         set sc= file.LinkToFile(filename)
         set sc=file.CopyFrom(data.BStream)
@@ -80,14 +82,14 @@ ClassMethod extractBinary(id As %Integer, directory As %String = "tmp") As %Stat
     return sc
 }
 
-ClassMethod extractCharacter(id As %Integer, directory As %String = "tmp") As %Status
+ClassMethod extractCharacter(id As %Integer, extension As %String = "txt", directory As %String = "tmp") As %Status
 {
     set sc=$$$OK
     if ..%ExistsId(id) {
         set data=..%OpenId(id)
         set directory=##class(%File).NormalizeDirectory($system.Util.DataDirectory()_directory)
         do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
-        set filename=directory_id_"_CStream.txt"
+        set filename=directory_id_"_CStream."_extension
         set file=##class(%Stream.FileCharacter).%New()
         set sc= file.LinkToFile(filename)
         set sc=file.CopyFrom(data.CStream)
@@ -134,6 +136,9 @@ Storage Default
 </Value>
 <Value name="11">
 <Value>Boolean</Value>
+</Value>
+<Value name="12">
+<Value>extension</Value>
 </Value>
 </Data>
 <DataLocation>^data.testD</DataLocation>
