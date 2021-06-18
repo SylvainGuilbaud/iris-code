@@ -44,7 +44,7 @@ Index BooleanIndex On Boolean;
 ClassMethod BStreamPop() As %Stream.GlobalBinary
 {
     set file=##class(%Stream.FileBinary).%New()
-    set filename=$system.Util.InstallDirectory()_"docs/copyright.pdf"
+    set filename=$system.Util.DataDirectory()_"docs/copyright.pdf"
 	set sc=file.LinkToFile(filename)
     set stream=##class(%Stream.GlobalBinary).%New()
     do stream.CopyFrom(file)
@@ -54,7 +54,7 @@ ClassMethod BStreamPop() As %Stream.GlobalBinary
 ClassMethod CStreamPop() As %Stream.GlobalCharacter
 {
     set file=##class(%Stream.FileCharacter).%New()
-    set filename=$system.Util.InstallDirectory()_"iris.cpf"
+    set filename=$system.Util.DataDirectory()_"iris.cpf"
 	set sc=file.LinkToFile(filename)
     set stream=##class(%Stream.GlobalCharacter).%New()
     do stream.CopyFrom(file)
@@ -66,7 +66,7 @@ ClassMethod extractBinary(id As %Integer, directory As %String = "tmp") As %Stat
     set sc=$$$OK
     if ..%ExistsId(id) {
         set data=..%OpenId(id)
-        set directory=##class(%File).NormalizeDirectory($system.Util.InstallDirectory()_directory)
+        set directory=##class(%File).NormalizeDirectory($system.Util.DataDirectory()_directory)
         do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
         set filename=directory_id_"_BStream.jpg"
         set file=##class(%Stream.FileBinary).%New()
@@ -85,7 +85,7 @@ ClassMethod extractCharacter(id As %Integer, directory As %String = "tmp") As %S
     set sc=$$$OK
     if ..%ExistsId(id) {
         set data=..%OpenId(id)
-        set directory=##class(%File).NormalizeDirectory($system.Util.InstallDirectory()_directory)
+        set directory=##class(%File).NormalizeDirectory($system.Util.DataDirectory()_directory)
         do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
         set filename=directory_id_"_CStream.txt"
         set file=##class(%Stream.FileCharacter).%New()
