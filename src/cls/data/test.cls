@@ -44,7 +44,8 @@ Index BooleanIndex On Boolean;
 ClassMethod BStreamPop() As %Stream.GlobalBinary
 {
     set file=##class(%Stream.FileBinary).%New()
-	set sc=file.LinkToFile("/Users/guilbaud/git/_irishealth/data/ISlogo2020.jpg")
+    set filename=$system.Util.InstallDirectory()_"docs/copyright.pdf"
+	set sc=file.LinkToFile(filename)
     set stream=##class(%Stream.GlobalBinary).%New()
     do stream.CopyFrom(file)
     return stream
@@ -53,7 +54,8 @@ ClassMethod BStreamPop() As %Stream.GlobalBinary
 ClassMethod CStreamPop() As %Stream.GlobalCharacter
 {
     set file=##class(%Stream.FileCharacter).%New()
-	set sc=file.LinkToFile("/Users/guilbaud/git/_irishealth/src/python/data2json_iris.py")
+    set filename=$system.Util.InstallDirectory()_"iris.cpf"
+	set sc=file.LinkToFile(filename)
     set stream=##class(%Stream.GlobalCharacter).%New()
     do stream.CopyFrom(file)
     return stream

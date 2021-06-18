@@ -108,7 +108,7 @@
 					"raw": "{\n            \"IDCDCINTERDITTETE\": \"1\",\n            \"Designation\": \"186339/3 OCCI : PRODUITS MAISON ( BOUGIE 10% - CAPILLAS 10% - PARFUMS AMBIANCE 4%) - DOSAGE MAX 15% ; CALCULER AU DOSAGE PF PHRASE H412 ET EUH 208 EN PRODUIT FINI OK (CF MAIL DU 17/03/2015) + VOIR REMARQUES\\\\n    X\",\n            \"Remarques\": \"INFOS: 5 HE � mettre absolument dont deux origine France/Provence parmi : Romarin Basilic\\\\nEucalyptus verveine Citron Bay laurel Gingembre Pin\\\\nOK MONDE\\\\nOK VOC\",\n            \"MaxAllergN\": \"0\",\n            \"MaxAllergS\": \"0\",\n            \"MaxAllergT\": \"0\",\n            \"DateModif\": \"2016-12-14\",\n            \"SeuilAllergSI\": \"0\",\n            \"CLISId\": \"0\",\n            \"GSOCId\": \"13\",\n            \"bActif\": \"0\",\n            \"NumBrief\": \"\",\n            \"MaxAllergCP\": \"0\",\n            \"MaxAllergPFPR\": \"0\",\n            \"MaxAllergPFPNR\": \"0\",\n            \"SeuilAllergPFPNR\": \"0\",\n            \"SeuilAllergPFPR\": \"0\",\n            \"COVUSPF\": \"3\",\n            \"COVUSCP\": \"30\",\n            \"COVCHCP\": \"0\",\n            \"COVCHPF\": \"0\"\n        }"
 				},
 				"url": {
-					"raw": "http://localhost:52773/admin/pop/data.test/3",
+					"raw": "http://localhost:52773/admin/pop/data.test/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -118,7 +118,7 @@
 						"admin",
 						"pop",
 						"data.test",
-						"3"
+						"2"
 					]
 				}
 			},
