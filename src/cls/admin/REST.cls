@@ -8,7 +8,6 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Routes>
 <Route Url="/" Method="GET" Call="version"/>
 <Route Url="/shell/:id" Method="GET" Call="shell"/>
-<Route Url="/vep/:step" Method="GET" Call="vep"/>
 <Route Url="/pop/:classname/:nb" Method="GET" Call="pop"/>
 <Route Url="/import" Method="POST" Call="import"/>
 <Route Url="/import/data" Method="POST" Call="importGlobals"/>
@@ -301,13 +300,9 @@ ClassMethod shell(id As %String) As %Status
     set %response.ContentType="application/json"
     set json={}
 
-    if id="vep"  { 
-        set command="/tmp/vep1.sh"
-        set args($i(args))="pass.txt"
-    }
     if id=1  { 
-        set command="/data/DataGouvernance/parseDirectory.sh"
-        set args($i(args))="/ods4/BU IA"
+        set command="/data/data.sh"
+        set args($i(args))="/data"
     }
     if id=2  {
         set command="mkdir"
@@ -322,42 +317,6 @@ ClassMethod shell(id As %String) As %Status
     
     set json.command=(command)
     set json.arg=(args(1))
-    set json.status=(status)
-    set json.username=($Username)
-    set json.ts=($zdt($now(),3,,6))
-    do json.%ToJSON()
-   
-    return sc
-}
-
-ClassMethod vep(step As %String) As %Status
-{
-    set sc=$$$OK
-    set %response.ContentType="application/json"
-    set json={}
-
-    if step=0 {
-        #; set command="/data/pipelines/step0.vep.sh"
-        #; set args($i(args))="/data/pipelines/pass.txt"  
-        set ssh = ##class(%Net.SSH.Session).%New()
-        do ssh.Connect("10.56.0.58")
-        do ssh.AuthenticateWithUsername("IRIS","Bonjour21!21")
-        set command="./step0.vep.sh"
-        set status=ssh.Execute(command,.device,.env)
-    }
-    if step=1 {
-        set command="/data/pipelines/step1.simple.sh"
-        set args($i(args))="/data/pipelines/pass.txt"  
-    }
-    if step=2 {
-        set command="/data/pipelines/step2.alteredgenes.sh"
-        set args($i(args))="/data/pipelines/pass.txt"  
-    }
-      
-    #; set status=$zf(-100,"/LOGCMD /STDOUT=""/tmp/cmd.log"" /STDERR=""/tmp/cmd.err""",command,.args)
-    
-    set json.command=(command)
-    #; set json.arg=(args(1))
     set json.status=(status)
     set json.username=($Username)
     set json.ts=($zdt($now(),3,,6))
