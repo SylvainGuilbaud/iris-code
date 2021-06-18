@@ -1,0 +1,27 @@
+{
+    "objectscript.conn": {
+        "ns": "DEV",
+        "active": true,
+        "server": "irishealth",
+        "links": {
+            "terminal":"http://localhost:52773/terminal/",
+            "doc":"https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls"
+        }
+    },
+    "git.ignoreLimitWarning": true,
+    "sqltools.connections": [
+        {
+            "namespace": "USER",
+            "connectionMethod": "Server and Port",
+            "showSystem": false,
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 52773,
+            "askForPassword": false,
+            "driver": "InterSystems IRIS",
+            "name": "irishealth",
+            "username": "_system",
+            "password": "SYS"
+        }
+    ]
+}
