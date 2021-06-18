@@ -692,7 +692,7 @@ ClassMethod sendPatient() As %Status
 	set tSC=##class(Ens.Director).CreateBusinessService("acquisition patient REST",.tService)
 
 	set request=##class(Ens.StringRequest).%New()
-	set request=##class(sylvain.patient.Record).%New()
+	set request=##class(patient.Record).%New()
 	set request.age=31
 
 	set sc=tService.ProcessInput(request,.response)
