@@ -4,7 +4,7 @@
         "active": true,
         "server": "irishealth",
         "links": {
-            "terminal":"http://localhost:52773/terminal/",
+            "terminal":"http://localhost:62773/terminal/",
             "doc":"https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls"
         }
     },
