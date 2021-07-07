@@ -14,7 +14,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/import/data/:classname" Method="POST" Call="importJSON"/>
 <Route Url="/import/data/array/:classname" Method="POST" Call="importArrayJSON"/>
 <Route Url="/nb/:classname" Method="GET" Call="nb"/>
-<Route Url="/kill/:classname" Method="GET" Call="kill"/>
+<Route Url="/kill/:classname" Method="DELETE" Call="kill"/>
 <Route Url="/list/:classname" Method="GET" Call="list"/>
 <Route Url="/list/:classname/:nb" Method="GET" Call="listTop"/>
 <Route Url="/sqllist/:classname" Method="GET" Call="listSQLAll"/>
@@ -31,6 +31,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/production" Method="POST" Call="createProduction" />
 <Route Url="/_spec" Method="GET" Call="SwaggerSpec" />
 <Route Url="/test/:type" Method="GET" Call="CopyTestFile" />
+<Route Url="/ddl/export" Method="GET" Call="ddl"/>
 </Routes>
 }
 
