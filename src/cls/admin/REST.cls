@@ -32,7 +32,96 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/_spec" Method="GET" Call="SwaggerSpec" />
 <Route Url="/test/:type" Method="GET" Call="CopyTestFile" />
 <Route Url="/ddl/export" Method="GET" Call="ddl"/>
+<Route Url="/ddl/export/:schema" Method="GET" Call="ddl"/>
+<Route Url="/ddl/export/:schema/:table" Method="GET" Call="ddl"/>
+<Route Url="/ddl/export" Method="POST" Call="ddlOptions"/>
+<Route Url="/ddl/export/:schema" Method="POST" Call="ddlOptions"/>
+<Route Url="/ddl/export/:schema/:table" Method="POST" Call="ddlOptions"/>
 </Routes>
+}
+
+ClassMethod ddl(schema As %String, table As %String) As %Status
+{
+    set start=$zh
+    set sc=$$$OK
+    set %response.ContentType="application/json"
+    set json={}
+    set:$Get(schema,"")="" schema="*"
+    set:$Get(table,"")="" table="*"
+    set json.schema=($get(schema))
+    set json.tablename=($get(table))
+    set verbose=0,directory="ddl",filename="exportDDL",users=0,roles=0,priv=0,syspriv=0
+    set sc=##class(admin.ddl).export(.message,
+                                    verbose,
+                                    schema,
+                                    table,
+                                    directory,
+                                    filename,
+                                    users,
+                                    roles,
+                                    priv,
+                                    syspriv) 
+    set json.filename=message.filename
+    if sc{
+        set json.result=message.result
+        set json.size=message.size
+    } else {
+        set json.error=message.error
+        set json.code=message.code
+    }
+    
+    set json.elapse=$zh-start
+    do json.%ToJSON()
+    return sc
+}
+
+ClassMethod ddlOptions(schema As %String, table As %String) As %Status
+{
+    set start=$zh
+    set sc=$$$OK
+    set %response.ContentType="application/json"
+    set payload={}.%FromJSON(%request.Content)
+    set json={}
+    set json.directory=payload.directory
+    set json.filename=payload.filename
+    set json.users=payload.users
+    set json.roles=payload.roles
+    set json.priv=payload.priv
+    set json.syspriv=payload.syspriv
+    set:$Get(schema,"")="" schema="*"
+    set:$Get(table,"")="" table="*"
+    set json.schema=($get(schema))
+    set json.tablename=($get(table))
+    set:json.directory="" json.directory="ddl"
+    set:json.filename="" json.filename="exportDDL"
+    set:json.users="" json.users=0
+    set:json.roles="" json.roles=0
+    set:json.priv="" json.priv=0
+    set:json.syspriv="" json.syspriv=0
+    set verbose=0
+     
+    set sc=##class(admin.ddl).export(.message,
+                                    verbose,
+                                    schema,
+                                    table,
+                                    json.directory,
+                                    json.filename,
+                                    json.users,
+                                    json.roles,
+                                    json.priv,
+                                    json.syspriv) 
+    set json.filename=message.filename
+    if sc{
+        set json.result=message.result
+        set json.size=message.size
+    } else {
+        set json.error=message.error
+        set json.code=message.code
+    }
+    
+    set json.elapse=$zh-start
+    do json.%ToJSON()
+    return sc
 }
 
 ClassMethod pop(classname As %String, nb As %String) As %Status
