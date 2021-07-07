@@ -8,7 +8,14 @@ ClassMethod export(verbose As %Boolean = 0, schema As %String = "*", table As %S
     set sc=$$$OK
     set directory=##class(%File).NormalizeDirectory($system.Util.DataDirectory()_directory)
     do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
-    set filename=directory_filename_"-"_schema_"-"_table_$case(roles,1:"-roles",0:"")_$case(users,1:"-users",0:"")_$case(privileges,1:"-privileges",0:"")_$case(systemPrivileges,1:"-systemPrivileges",0:"")_..#EXTENSION
+    set filename=directory_filename_
+                "-"_schema_
+                "-"_table_
+                $case(roles,1:"-roles",0:"")_
+                $case(users,1:"-users",0:"")_
+                $case(privileges,1:"-privileges",0:"")_
+                $case(systemPrivileges,1:"-systemPrivileges",0:"")_
+                ..#EXTENSION
     /*
     qualifiers
         Specify any subset of the following arguments in in either dynamic object (e.g. {"FileOpenParam":"WNS","Roles":0}), json string (e.g. "{""FileOpenParam"":""WNS"",""Roles"":""0""}"), or legacy qualifier format (e.g. "/FileOpenParam=WNS/Roles=0"). All qualifier names are case insensitive. Note that variables can be embedded in dynamic objects with the format {"ParamName":(varName)}.
