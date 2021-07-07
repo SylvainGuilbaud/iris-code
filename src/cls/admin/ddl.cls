@@ -8,7 +8,8 @@ ClassMethod export(verbose As %Boolean = 0, schema As %String = "*", table As %S
     set sc=$$$OK
     set directory=##class(%File).NormalizeDirectory($system.Util.DataDirectory()_directory)
     do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
-    set filename=directory_filename_
+    set filename=directory_
+                filename_
                 "-"_schema_
                 "-"_table_
                 $case(roles,1:"-roles",0:"")_
