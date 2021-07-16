@@ -146,7 +146,6 @@
 /// <p>Index map sexIdx evaluation complete, 0 errors, elapsed time: .000087 seconds
 /// <p>%ValidateIndices is complete, total elapsed time: .001722 seconds
 /// <p>1
-/// </blockquote>
 Class User.person Extends (%Persistent, %Populate)
 {
 
