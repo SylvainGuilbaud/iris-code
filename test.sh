@@ -1,0 +1,1 @@
+python3 src/python/iknow.py "InterSystems aime toujours la simplicité" fr
