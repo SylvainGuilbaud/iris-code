@@ -41,17 +41,6 @@ def highlight(text, language="en", iknow=iknowpy.iKnowEngine()):
                 if pa['type']=="Certainty":
                     s['entities'][ent]['colour'] = Fore.CYAN
         
-      
-            # if sa['type']=="DateTime":
-                  
-                # for e in s['entities']:
-                #     if sa['entity_ref'] == e('entity_id'):
-                #         e['entities'][e]['colour'] = Back.WHITE
-            
-            # print('\n'+sa['type']+" : "+sa['marker'], end='\n') 
-                
-                # s['entities']['marker']['colour'] = Back.WHITE
-        
 
         for e in s['entities']:
             colour = Fore.GREEN
@@ -66,8 +55,11 @@ def highlight(text, language="en", iknow=iknowpy.iKnowEngine()):
                 style = Style.DIM
             
             for sa in s['sent_attributes']:
-                if e['offset_start'] == sa['offset_start']: 
+                if (e['offset_start'] == sa['offset_start']) and sa['type'] == 'DateTime': 
                     colour = Fore.BLUE
+                    style = Style.NORMAL
+                if (e['offset_start'] == sa['offset_start']) and sa['type'] == 'Negation':
+                    colour = Fore.RED
                     style = Style.NORMAL
             
             print(colour + style + text[e['offset_start']:e['offset_stop']], end='\n')
