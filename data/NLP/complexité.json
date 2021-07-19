@@ -1,0 +1,28 @@
+{"sentences": [
+        {"entities": [
+                {"type": "Concept", "offset_start": 0, "offset_stop": 12, "index": "intersystems", "dominance_value": 0.0, "entity_id": 1
+                },
+                {"type": "Relation", "offset_start": 13, "offset_stop": 26, "index": "n aime jamais", "dominance_value": 1000.0, "entity_id": 2
+                },
+                {"type": "NonRelevant", "offset_start": 27, "offset_stop": 29, "index": "la", "dominance_value": 0.0, "entity_id": 0
+                },
+                {"type": "Concept", "offset_start": 30, "offset_stop": 40, "index": "complexité", "dominance_value": 0.0, "entity_id": 3
+                }
+            ], "sent_attributes": [
+                {"type": "Negation", "offset_start": 13, "offset_stop": 26, "marker": "n' jamais", "parameters": [("", ""), ("", "")
+                    ], "entity_ref": 1, "entity_vector": []
+                }
+            ], "path": [
+                0,
+                1,
+                3
+            ], "path_attributes": [
+                {"type": "Negation", "pos": 0, "span": 3
+                }
+            ]
+        }
+    ], "proximity": [((1,
+        3),
+        64)
+    ]
+}
