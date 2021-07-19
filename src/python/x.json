@@ -1,0 +1,28 @@
+{"sentences": [
+        {"entities": [
+                {"type": "Concept", "offset_start": 0, "offset_stop": 4, "index": "jean", "dominance_value": 0.0, "entity_id": 1
+                },
+                {"type": "Relation", "offset_start": 5, "offset_stop": 9, "index": "aime", "dominance_value": 1000.0, "entity_id": 2
+                },
+                {"type": "PathRelevant", "offset_start": 10, "offset_stop": 17, "index": "souvent", "dominance_value": 0.0, "entity_id": 3
+                },
+                {"type": "NonRelevant", "offset_start": 18, "offset_stop": 20, "index": "le", "dominance_value": 0.0, "entity_id": 0
+                },
+                {"type": "Concept", "offset_start": 21, "offset_stop": 29, "index": "chocolat", "dominance_value": 0.0, "entity_id": 4
+                }
+            ], "sent_attributes": [
+                {"type": "DateTime", "offset_start": 10, "offset_stop": 17, "marker": "souvent", "parameters": [("", ""), ("", "")
+                    ], "entity_ref": 2, "entity_vector": []
+                }
+            ], "path": [
+                0,
+                1,
+                2,
+                4
+            ], "path_attributes": []
+        }
+    ], "proximity": [((1,
+        4),
+        51)
+    ]
+}

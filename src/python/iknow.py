@@ -41,20 +41,22 @@ def highlight(text, language="en", iknow=iknowpy.iKnowEngine()):
                 if pa['type']=="Certainty":
                     s['entities'][ent]['colour'] = Fore.CYAN
         
-        # for sa in s['sent_attributes']:
-        #     if sa['type']=="DateTime":
-        #         for e in s['entities']:
-        #             if sa['entity_ref'] == e('entity_id'):
-        #                 e['entities'][e]['colour'] = Back.WHITE
+      
+            # if sa['type']=="DateTime":
+                  
+                # for e in s['entities']:
+                #     if sa['entity_ref'] == e('entity_id'):
+                #         e['entities'][e]['colour'] = Back.WHITE
             
             # print('\n'+sa['type']+" : "+sa['marker'], end='\n') 
                 
                 # s['entities']['marker']['colour'] = Back.WHITE
-                    
+        
+
         for e in s['entities']:
             colour = Fore.GREEN
             style = Style.NORMAL
-            
+
             if "colour" in e:
                 colour = e["colour"]
                 
@@ -62,9 +64,12 @@ def highlight(text, language="en", iknow=iknowpy.iKnowEngine()):
                 style = Style.BRIGHT
             if (e['type'] == 'NonRelevant') | (e['type'] == 'PathRelevant'):
                 style = Style.DIM
-            # if (e['entity_id'] == ):
-            #     colour = Back.WHITE
-                
+            
+            for sa in s['sent_attributes']:
+                if e['offset_start'] == sa['offset_start']: 
+                    colour = Fore.BLUE
+                    style = Style.NORMAL
+            
             print(colour + style + text[e['offset_start']:e['offset_stop']], end='\n')
             print(Style.RESET_ALL)
 
