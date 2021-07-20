@@ -1,0 +1,44 @@
+Class admin.tasks.indices Extends %SYS.Task.Definition
+{
+
+/// Description
+Parameter LOGFILE = "/tmp/ValidateIndices_";
+
+Property classname As %String(MAXLEN = 250) [ InitialExpression = "PackageName.ClassName" ];
+
+Property autocorrect As %Boolean [ InitialExpression = 1 ];
+
+Method OnTask() As %Status
+{
+    /*
+    https://docs.intersystems.com/irislatest/csp/documatic/%25CSP.Documatic.cls?&LIBRARY=%25SYS&CLASSNAME=%25SYSTEM.OBJ#ValidateIndices
+
+    classmethod ValidateIndices(classname As %Library.String, idxList As %String = "", autoCorrect As %Boolean = 0, lockOption As %Integer = 1, multiProcess As %Boolean = 0, verbose As %Boolean = 1, ByRef errors As %String) as %Library.Status
+    Validate indices for a class
+
+    Parameters:
+    classname
+    Name of the persistent class to validate indices for.
+    idxList
+    Optional. "" to check all indices, or specify a $list of index names to check. Default=""
+    autoCorrect
+    Optional. If true, correct any errors found. Default=0
+    lockOption
+    Optional. Default = 1 0 - No locking is performed at all 1 - Shared locking as each row is checked 2 - exclusive lock on entire table for duration of the run
+    multiProcess
+    Optional. If true, parts of %ValidateIndices will use parallel processing when possible. Default=0
+    verbose
+    Optional. If true, display output to the current device. Default=1. When called for a sharded class, verbose is force to 0.
+    errors
+    Optional. Passed by reference. Returns an array of errors found in the index(es) validated. If autoCorrect=1, this is an array of issues corrected.
+    Returns:
+
+    Status Code
+    */
+    set sc=$$$OK,idxList="",lockOption=1,multiProcess=1,verbose=0,log=..#LOGFILE_..classname_".log"
+    open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,lockOption,multiProcess,verbose,.errors)
+    merge ^admin.tasks.indices("ERRORS",$zdt($h,3))=errors
+    return sc
+}
+
+}
