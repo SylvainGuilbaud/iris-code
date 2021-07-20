@@ -37,21 +37,25 @@ Method OnTask() As %Status
     */
     set directory=##class(%File).NormalizeDirectory($system.Util.DataDirectory()_"tmp")
     do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
-    set sc=$$$OK,idxList="",lockOption=1,multiProcess=1,verbose=1,log=directory_..#LOGFILE_..classname_".log",ts=$zdt($h,3)
+    set sc=$$$OK,idxList="",lockOption=1,multiProcess=1,verbose=1,log=directory_..#LOGFILE_..classname_".log",ts=$zdt($h,3),start=$zh
     open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,lockOption,multiProcess,verbose,.errors)
     close log
+    set ^admin.tasks.indices(..classname,"executed on")=ts
+    set elapse=$zh-start
+    set ^admin.tasks.indices(..classname,"duration")=$num(elapse,2)_" seconds"
+    set ^admin.tasks.indices(..classname,"log file")=log
     set file=##class(%File).%New(log)
     set sc=file.Open("RS")
     if sc {
         while 'file.AtEnd {
             set line=file.ReadLine()
-            set:line'="" ^admin.tasks.indices(ts,log,$i(^admin.tasks.indices(ts,log)))=line
+            set:line'="" ^admin.tasks.indices(..classname,"log",$i(^admin.tasks.indices(..classname,"log")))=line
         }
         do file.Close()
     } else {
-        set ^admin.tasks.indices(ts,log,$i(^admin.tasks.indices(ts,log)))="CANNOT OPEN "_log_":"_$system.Status.GetErrorText(sc)
+        set ^admin.tasks.indices(..classname,$i(^admin.tasks.indices(..classname)))="CANNOT OPEN "_log_":"_$system.Status.GetErrorText(sc)
     }
-    merge ^admin.tasks.indices(ts,log,"ERRORS")=errors
+    merge ^admin.tasks.indices(..classname,"ERRORS")=errors
     return sc
 }
 
