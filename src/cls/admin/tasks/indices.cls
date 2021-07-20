@@ -35,7 +35,7 @@ Method OnTask() As %Status
 
     Status Code
     */
-    set directory=##class(%File).NormalizeDirectory($system.Util.DataDirectory()_"tmp")
+    set directory=##class(%File).NormalizeDirectory($system.Util.InstallDirectory()_"tmp")
     do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
     set sc=$$$OK,idxList="",lockOption=1,multiProcess=1,verbose=1,log=directory_..#LOGFILE_..classname_".log",ts=$zdt($h,3),start=$zh
     open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,lockOption,multiProcess,verbose,.errors)
