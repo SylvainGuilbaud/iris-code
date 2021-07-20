@@ -2,7 +2,7 @@ Class admin.tasks.indices Extends %SYS.Task.Definition
 {
 
 /// Description
-Parameter LOGFILE = "/tmp/ValidateIndices_";
+Parameter LOGFILE = "ValidateIndices_";
 
 Property classname As %String(MAXLEN = 250) [ InitialExpression = "PackageName.ClassName" ];
 
@@ -35,9 +35,11 @@ Method OnTask() As %Status
 
     Status Code
     */
-    set sc=$$$OK,idxList="",lockOption=1,multiProcess=1,verbose=0,log=..#LOGFILE_..classname_".log"
+    set directory=##class(%File).NormalizeDirectory($system.Util.DataDirectory()_"tmp")
+    do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
+    set sc=$$$OK,idxList="",lockOption=1,multiProcess=1,verbose=0,log=directory_$tr($zdt($h,3)," :","__")_"-"_..#LOGFILE_..classname_".log"
     open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,lockOption,multiProcess,verbose,.errors)
-    merge ^admin.tasks.indices("ERRORS",$zdt($h,3))=errors
+    merge ^admin.tasks.indices("ERRORS",log)=errors
     return sc
 }
 
