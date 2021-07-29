@@ -8,6 +8,8 @@ Property classname As %String(MAXLEN = 250) [ InitialExpression = "PackageName.C
 
 Property autocorrect As %Boolean [ InitialExpression = 1 ];
 
+Property lockOption As %Integer(DISPLAYLIST = ",NO LOCK,SHARED LOCK,EXCLUSIVE LOCK", VALUELIST = ",0,1,2") [ InitialExpression = 1 ];
+
 Method OnTask() As %Status
 {
     /*
@@ -37,14 +39,14 @@ Method OnTask() As %Status
     */
     set directory=##class(%File).NormalizeDirectory($system.Util.InstallDirectory()_"tmp")
     do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
-    set sc=$$$OK,idxList="",lockOption=1,multiProcess=1,verbose=1,log=directory_..#LOGFILE_..classname_".log",ts=$zdt($h,3),start=$zh
+    set sc=$$$OK,idxList="",multiProcess=1,verbose=1,log=directory_..#LOGFILE_..classname_".log",ts=$zdt($h,3),start=$zh
     if $system.Version.GetISCProduct()<4 {
         // Caché or Ensemble or HealthShare
-        open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,lockOption,multiProcess)
+        open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,..lockOption,multiProcess)
     }
     if $system.Version.GetISCProduct()>=4 {
         // IRIS
-        open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,lockOption,multiProcess,verbose,.errors)
+        open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,..lockOption,multiProcess,verbose,.errors)
     }
     close log
     set ^admin.tasks.indices(..classname,ts,"status")=$system.Status.GetErrorText(sc)
