@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for UNIX (Apple Mac OS X for x86-64) 2018.1.5 (Build 659U)" ts="2021-07-20 13:24:58">
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Apple Mac OS X for x86-64) 2021.1 (Build 215U)" ts="2021-07-29 13:59:05">
 <Class name="admin.tasks.indices">
 <Super>%SYS.Task.Definition</Super>
-<TimeChanged>65945,47481.841112</TimeChanged>
-<TimeCreated>65945,45143.935244</TimeCreated>
+<TimeChanged>65954,35581.852488</TimeChanged>
+<TimeCreated>65945,39165.083835</TimeCreated>
 
 <Parameter name="LOGFILE">
 <Description>
@@ -20,6 +20,13 @@ Description</Description>
 <Property name="autocorrect">
 <Type>%Boolean</Type>
 <InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="lockOption">
+<Type>%Integer</Type>
+<InitialExpression>1</InitialExpression>
+<Parameter name="DISPLAYLIST" value=",NO LOCK,SHARED LOCK,EXCLUSIVE LOCK"/>
+<Parameter name="VALUELIST" value=",0,1,2"/>
 </Property>
 
 <Method name="OnTask">
@@ -52,18 +59,17 @@ Description</Description>
     */
     set directory=##class(%File).NormalizeDirectory($system.Util.InstallDirectory()_"tmp")
     do:'##class(%File).DirectoryExists(directory) ##class(%File).CreateDirectoryChain(directory)
-    set sc=$$$OK,idxList="",lockOption=1,multiProcess=1,verbose=1,log=directory_..#LOGFILE_..classname_".log",ts=$zdt($h,3),start=$zh
+    set sc=$$$OK,idxList="",multiProcess=1,verbose=1,log=directory_..#LOGFILE_..classname_".log",ts=$zdt($h,3),start=$zh
     if $system.Version.GetISCProduct()<4 {
         // Caché or Ensemble or HealthShare
-        open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,lockOption,multiProcess)
+        open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,..lockOption,multiProcess)
     }
     if $system.Version.GetISCProduct()>=4 {
         // IRIS
-        open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,lockOption,multiProcess,verbose,.errors)
+        open log:("NW") use log set sc=$SYSTEM.OBJ.ValidateIndices(..classname,idxList,..autocorrect,..lockOption,multiProcess,verbose,.errors)
     }
     close log
-    set ^admin.tasks.indices(..classname,ts,"status","codes")=$system.Status.GetErrorCodes(sc)
-    set ^admin.tasks.indices(..classname,ts,"status","text")=$system.Status.GetErrorText(sc)
+    set ^admin.tasks.indices(..classname,ts,"status")=$system.Status.GetErrorText(sc)
     set elapse=$zh-start
     set ^admin.tasks.indices(..classname,ts,"duration")=$num(elapse,2)_" seconds"
     set ^admin.tasks.indices(..classname,ts,"log file")=log

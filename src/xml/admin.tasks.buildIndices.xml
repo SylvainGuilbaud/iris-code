@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Apple Mac OS X for x86-64) 2021.1 (Build 215U)" ts="2021-07-29 13:59:23">
+<Class name="admin.tasks.buildIndices">
+<Super>%SYS.Task.Definition</Super>
+<TimeChanged>65954,35958.835017</TimeChanged>
+<TimeCreated>65954,35726.527165</TimeCreated>
+
+<Property name="classname">
+<Type>%String</Type>
+<InitialExpression>"PackageName.ClassName"</InitialExpression>
+<Parameter name="MAXLEN" value="250"/>
+</Property>
+
+<Method name="OnTask">
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set sc=$CLASSMETHOD(..classname,"%BuildIndices")
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+</Export>
