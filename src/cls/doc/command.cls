@@ -21,7 +21,6 @@ ClassMethod query(globalName As %String) As %Status
     } else {
         set key=$QUERY(@globalName@(""),1,data)
         do {
-            #; write key,":",!
             zwrite key,data
             write !
             set key=$QUERY(@key,1,data)
