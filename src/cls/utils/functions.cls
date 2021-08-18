@@ -6,7 +6,8 @@ Class utils.functions
 ClassMethod median(colname As %String = "age", tablename As %String = "sample.person") As %Numeric [ ExternalProcName = median, SqlProc ]
 {
     set median=""
-    $$$sql("select count(*) nb FROM "_tablename)
+    $$$sql("SELECT count(*) nb")
+    $$$sql("FROM "_tablename)
     set stmt=##class(%SQL.Statement).%New()
     set sc=stmt.%Prepare(.sql)
     set result=stmt.%Execute()
@@ -22,7 +23,9 @@ ClassMethod median(colname As %String = "age", tablename As %String = "sample.pe
         set rowInTheMiddle=(nb+1)/2
     }
     kill sql
-    $$$sql("select "_colname_" data FROM "_tablename_" ORDER BY "_colname)
+    $$$sql("SELECT "_colname_" data ")
+    $$$sql("FROM "_tablename)
+    $$$sql("ORDER BY "_colname)
     set sc=stmt.%Prepare(.sql)
     set result=stmt.%Execute()
     set row = 0
@@ -46,8 +49,17 @@ ClassMethod test() As %Status
 {
     set age=..median()
     write "median age for sample.person is :",age,!
-    set status=..median("status","sqluser.person")
-    write "median status for sqluser.person is :",status,!
+    do ##class(Sample.Person).Populate(1)
+    set age=..median()
+    write "after 1 new person:",!
+    write "median age for sample.person is :",age,!
+    do ##class(Sample.Employee).Populate(3)
+    set salary=..median("salary","sample.employee")
+    write "median salary for sample.employee is :",salary,!
+    do ##class(Sample.Employee).Populate(3)
+    set salary=..median("salary","sample.employee")
+    write "after 3 new employees:",!
+    write "median salary for sample.employee is :",salary,!
     return $$$OK
 }
 
