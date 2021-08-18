@@ -56,12 +56,12 @@ ClassMethod test() As %Status
     set age=..median()
     write "after 1 new person:",!
     write "median age for sample.person is :",age,!
-    do ##class(Sample.Employee).Populate(3)
+    do ##class(Sample.Employee).Populate(2)
     set salary=..median("salary","sample.employee")
     write "median salary for sample.employee is :",salary,!
-    do ##class(Sample.Employee).Populate(3)
+    do ##class(Sample.Employee).Populate(1)
     set salary=..median("salary","sample.employee")
-    write "after 3 new employees:",!
+    write "after 1 new employees:",!
     write "median salary for sample.employee is :",salary,!
     return $$$OK
 }
