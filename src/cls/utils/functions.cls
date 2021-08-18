@@ -9,7 +9,7 @@ Class utils.functions
 ClassMethod median(colname As %String = "age", tablename As %String = "sample.person") As %Numeric [ ExternalProcName = median, SqlProc ]
 {
     set median=""
-    $$$sql("SELECT count(*) nb")
+    $$$sql("SELECT count("_colname_") nb")
     $$$sql("FROM "_tablename)
     set stmt=##class(%SQL.Statement).%New()
     set sc=stmt.%Prepare(.sql)
@@ -28,6 +28,7 @@ ClassMethod median(colname As %String = "age", tablename As %String = "sample.pe
     kill sql
     $$$sql("SELECT "_colname_" data ")
     $$$sql("FROM "_tablename)
+    $$$sql("WHERE "_colname_" IS NOT NULL")
     $$$sql("ORDER BY "_colname)
     set sc=stmt.%Prepare(.sql)
     set result=stmt.%Execute()
