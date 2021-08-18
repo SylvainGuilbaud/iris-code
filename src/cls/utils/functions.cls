@@ -6,7 +6,7 @@ Include utils
 Class utils.functions
 {
 
-ClassMethod median(colname As %String = "age", tablename As %String = "sample.person", ByRef sc As %Status) As %Numeric [ ExternalProcName = median, SqlProc ]
+ClassMethod median(colname As %String = "age", tablename As %String = "sample.person") As %Numeric [ ExternalProcName = median, SqlProc ]
 {
     Try {
     set median="",sc=$$$OK
