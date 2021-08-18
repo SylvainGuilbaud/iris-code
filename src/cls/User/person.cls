@@ -157,6 +157,8 @@ Property dob As %Date(FORMAT = 4);
 
 Property sex As %Integer(VALUELIST = ",1,2");
 
+Property status As %Numeric [ InitialExpression = {$RANDOM(100)} ];
+
 Index nameIdx On name;
 
 Index cityIdx On city;
@@ -165,11 +167,12 @@ Index dobIdx On dob [ Type = bitmap ];
 
 Index sexIdx On sex [ Type = bitmap ];
 
-ClassMethod init(nb As %Integer = 10) As %Status
+ClassMethod init(nb As %Integer = 10) As %Integer
 {
     set sc=$$$OK
-    set sc=..Populate(nb)
-    return sc
+    kill ^User.personS,^User.personD,^User.personI
+    set inserted=..Populate(nb)
+    return inserted
 }
 
 Storage Default
@@ -189,6 +192,9 @@ Storage Default
 </Value>
 <Value name="5">
 <Value>sex</Value>
+</Value>
+<Value name="6">
+<Value>status</Value>
 </Value>
 </Data>
 <DataLocation>^User.personD</DataLocation>
