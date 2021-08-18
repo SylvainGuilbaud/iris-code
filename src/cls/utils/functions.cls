@@ -1,5 +1,8 @@
 Include utils
 
+/// 
+/// Author:sylvain.guilbaud@intersystems.com
+/// 
 Class utils.functions
 {
 
