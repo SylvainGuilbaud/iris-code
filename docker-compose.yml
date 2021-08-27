@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+
+  iris:
+    init: true
+    build:
+      context: .
+    image: iris-demo:latest
+    hostname: iris
+    volumes: 
+    - "./demo/:/tmp/iris"
+    ports:
+    - 52000:52773
+    - 51000:1972
+  db:
+    image: postgres:13.4-alpine3.14
+    hostname: db
+    environment:
+        POSTGRES_DB: demo
+        POSTGRES_PASSWORD: demo
+        POSTGRES_USER: demo
+    healthcheck:
+        test: ["CMD", "pg_isready", "-U", "demo"]
+        interval: 30s
+        timeout: 30s
+        retries: 3
+    ports:
+    - "5432:5432"
+    volumes:
+      - ./demo/postgreSQL:/docker-entrypoint-initdb.d/

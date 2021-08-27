@@ -2,10 +2,9 @@
     "objectscript.conn": {
         "ns": "USER",
         "active": true,
-        "server": "irishealth",
-        "links": {
-            "terminal":"http://localhost:62773/terminal/",
-            "doc":"https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls"
+        "docker-compose": {
+            "service": "iris",
+            "internalPort": 52773
         }
     },
     "git.ignoreLimitWarning": true,
