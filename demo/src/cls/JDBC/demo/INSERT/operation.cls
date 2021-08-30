@@ -7,80 +7,68 @@ Parameter ADAPTER = "JDBC.SQL.OutboundAdapter";
 
 Property Adapter As JDBC.SQL.OutboundAdapter;
 
-Property batch As %Integer [ InitialExpression = 10 ];
+Property batchSize As %Integer [ InitialExpression = 1000 ];
 
-Property batchSize As %Integer [ InitialExpression = 10 ];
+Property insertSize As %Integer [ InitialExpression = 50000 ];
 
-Parameter SETTINGS = "batch,batchSize";
+Parameter SETTINGS = "batchSize,insertSize";
 
 Parameter INVOCATION = "Queue";
 
-// Set max RAM memory for this process
-
 Method OnInit() As %Status
 {
-	Do ##super()
-	SET $ZSTORAGE=2147483647
-	q $$$OK
+	do ##super()
+	set $ZSTORAGE=2147483647
+	return $$$OK
 }
 
 Method INSERT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringResponse) As %Status
 {
-	set tStatus = $$$OK
+	set sc = $$$OK
 	
 	try{
-					
-		set nbLignes = 0
 		set pResponse = ##class(Ens.StringResponse).%New()
 		
 		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
 
-		//Pour les tests, on truncate les tables avant insertion
-		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"DROP TABLE IF EXISTS demo.ODS_Products"))
+		set insertQuery = "INSERT into customer (first_name,last_name,city,category) values (?,?,?,?))"
 
-		//Creer la table pour l'exemple
-		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"CREATE TABLE demo.ODS_Products (id int8 NULL,productname varchar NULL,date_alimentation date NULL)"))		
-
-		set SqlInsertView = "INSERT into demo.ODS_Products (ID,ProductName,Date_Alimentation) values (?,?,TO_DATE(?,'yyyy-mm-dd hh24:mi:ss'))"
-
-		$$$LOGINFO(SqlInsertView)
+		$$$LOGINFO(insertQuery)
 		
-		set batch = ..batch
+		set batchSize = ..batchSize
 				
 		set end =""
-		set i=0
-		while i<..batchSize{
+		set nbInserted=0
+		while nbInserted<..insertSize{
 			
-			set param = ""
+			kill data
 			
-			for k=1:1:batch {
+			for i=1:1:..batchSize {
 				
-				set param(k,1) = i
-				set param(k,1,"SqlType")=$$$SqlInteger
+				set data(i,1) = ##class(%PopulateUtils).FirstName()
+				set data(i,1,"SqlType")=$$$SqlVarchar
 
-				set param(k,2) = ##class(%PopulateUtils).Name()
-				set param(k,2,"SqlType")=$$$SqlVarchar
+				set data(i,2) = ##class(%PopulateUtils).LastName()
+				set data(i,2,"SqlType")=$$$SqlVarchar
+
+				set data(i,3) = ##class(%PopulateUtils).City()
+				set data(i,3,"SqlType")=$$$SqlVarchar
 			
-				set param(k,3) = $ZDATETIME($NOW(),3)
-				set param(k,3,"SqlType")=$$$SqlVarchar
+				set data(i,3) = $RANDOM(5)+1
+				set data(i,3,"SqlType")=$$$SqlInteger
 
-				set param(k) = 3
+				set data(i) = 4
 
-				set i = i + 1
-				q:(i=..batchSize)
-							
-				}	
+				do $INCREMENT(nbInserted)
+				q:(nbInserted=..insertSize)
+
+			}	
 		     
-			set param = k
+			set data = i
 			
-			set sc = ..Adapter.ExecuteUpdateBatchParamArray(.nrows,SqlInsertView,.param)
+			set sc = ..Adapter.ExecuteUpdateBatchParamArray(.nrows,insertQuery,.data)
 
-			$$$LOGINFO(sc)	
-
-			k param
-				
-			set nbLignes = nbLignes + nrows
-				
+			$$$LOGINFO(sc)		
 	}
 
 	Set TimeStampEnd = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
@@ -92,10 +80,9 @@ Method INSERT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 	}
 	catch exp
 	{
-		Set tStatus = exp.AsStatus()
+		set sc = exp.AsStatus()
 	}
-
-	Quit tStatus
+	return sc
 }
 
 XData MessageMap

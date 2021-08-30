@@ -11,61 +11,67 @@ Property batchSize As %Integer [ InitialExpression = 500 ];
 
 Parameter SETTINGS = "batchSize";
 
-// Set storage max pour ce processus
 
 Method OnInit() As %Status
 {
-	Do ##super()
-	SET $ZSTORAGE=2147483647
-	q $$$OK
+	do ##super()
+	set $ZSTORAGE=2147483647
+	return $$$OK
 }
 
 Method SELECT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringResponse) As %Status
 {
 	
-	set tStatus = $$$OK
-	set nbRows = 0
-
+	set sc = $$$OK
+	
 	try{
 		
 		set pResponse = ##class(Ens.StringResponse).%New()
-		set sqlGetView = "SELECT ID, ProductName FROM demo.ODS_Products"
+		set query = ""
+		set query = query_"SELECT "
+		set query = query_" id"
+		set query = query_",last_name"
+		set query = query_",first_name"
+		set query = query_",city"
+		set query = query_",active"
+    	set query = query_",category"
+		set query = query_",created" 
+		set query = query_"FROM customer"
 		
-		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
+		Set start = $zh
 
 		$$$TRACE(sqlGetView)
 			
-		$$$ThrowOnError(..Adapter.ExecuteQueryBatch(.tRs,sqlGetView,..batchSize))
+		$$$ThrowOnError(..Adapter.ExecuteQueryBatch(.rs,sqlGetView,..batchSize))
 		
-		While tRs.%Next(){
+		While rs.%Next(){
 
-			Set tID = tRs.Get("ID")
-
-			If ##class(JDBC.demo.product).%ExistsId(tID){
-				Set tProduct = ##class(JDBC.demo.product).%OpenId(tID)
+			set id = rs.Get("id")
+			if ##class(data.customer).%ExistsId(rs.Get("id")){
+				set customer = ##class(data.customer).%OpenId(id)
 			}
-			Else {
-				Set tProduct = ##class(JDBC.demo.product).%New()
+			else {
+				set customer = ##class(data.customer).%New()
 			}
-			
-			Set tProduct.ID = tID
-			Set tProduct.Name = tRs.Get("ProductName")
-			$$$ThrowOnError(tProduct.%Save())
+			set customer.lastName = rs.Get("last_name")
+			set customer.firstName = rs.Get("first_name")
+			set customer.city = rs.Get("city")
+			set customer.category = rs.Get("category")
+			set customer.active = rs.Get("active")
+			$$$ThrowOnError(customer.%Save())
 
-			Do $INCREMENT(nbRows)
+			do $INCREMENT(records)
 		}
 		
-		Set TimeStampEnd = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
+		set elapse = $zh-start
 
-		Set Delta = TimeStampEnd - TimeStampStart
-
-		Set pResponse.StringValue = nbRows_" in "_Delta
+		set pResponse.StringValue = records_" ("_elapse_" seconds)"
 	}
 	catch exp
 	{
-		Set tStatus = exp.AsStatus()
+		set sc = exp.AsStatus()
 	}
-	Quit tStatus
+	return sc
 }
 
 XData MessageMap
