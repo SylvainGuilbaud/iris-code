@@ -11,7 +11,7 @@ XData ProductionDefinition
   <Item Name="fichiers customers" Category="" ClassName="EnsLib.RecordMap.Service.BatchFileService" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
     <Setting Target="Host" Name="BatchClass">data.RM.customer.Batch</Setting>
     <Setting Target="Host" Name="RecordMap">data.RM.customer</Setting>
-    <Setting Target="Host" Name="TargetConfigNames">MAJ base SQL externe</Setting>
+    <Setting Target="Host" Name="TargetConfigNames">fichiersToExternalBase</Setting>
     <Setting Target="Adapter" Name="FilePath">/tmp/iris/in</Setting>
     <Setting Target="Adapter" Name="FileSpec">*.csv</Setting>
     <Setting Target="Host" Name="BatchHandling">Whole</Setting>
@@ -33,6 +33,9 @@ XData ProductionDefinition
     <Setting Target="Adapter" Name="JDBCDriver">org.postgresql.Driver</Setting>
     <Setting Target="Adapter" Name="Credentials">PostgreSQL</Setting>
     <Setting Target="Host" Name="batchSize">1000</Setting>
+  </Item>
+  <Item Name="fichiersToExternalBase" Category="" ClassName="EnsLib.MsgRouter.RoutingEngine" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Host" Name="BusinessRuleName">process.fichiersToExternalBase</Setting>
   </Item>
 </Production>
 }
