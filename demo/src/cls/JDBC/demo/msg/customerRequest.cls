@@ -1,4 +1,4 @@
-Class JDBC.demo.msg.test Extends Ens.Request
+Class JDBC.demo.msg.customerRequest Extends Ens.Request
 {
 
 Property active As %Boolean [ InitialExpression = {$random(2)} ];
@@ -17,8 +17,8 @@ Property originID As %Integer [ InitialExpression = {$INCREMENT(^OriginID)} ];
 
 Storage Default
 {
-<Data name="testDefaultData">
-<Subscript>"test"</Subscript>
+<Data name="customerRequestDefaultData">
+<Subscript>"customerRequest"</Subscript>
 <Value name="1">
 <Value>active</Value>
 </Value>
@@ -41,7 +41,7 @@ Storage Default
 <Value>originID</Value>
 </Value>
 </Data>
-<DefaultData>testDefaultData</DefaultData>
+<DefaultData>customerRequestDefaultData</DefaultData>
 <Type>%Storage.Persistent</Type>
 }
 

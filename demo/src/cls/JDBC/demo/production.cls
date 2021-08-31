@@ -27,6 +27,14 @@ XData ProductionDefinition
     <Setting Target="Host" Name="batchSize">10</Setting>
     <Setting Target="Host" Name="maxToInsert">50</Setting>
   </Item>
+  <Item Name="de customers" Category="" ClassName="EnsLib.RecordMap.Service.BatchFileService" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Host" Name="BatchClass">data.RM.customer.Batch</Setting>
+    <Setting Target="Host" Name="RecordMap">data.RM.customer</Setting>
+    <Setting Target="Host" Name="TargetConfigNames">INSERT into SQLDB</Setting>
+    <Setting Target="Adapter" Name="FilePath">/tmp/iris/in</Setting>
+    <Setting Target="Adapter" Name="FileSpec">*.csv</Setting>
+    <Setting Target="Host" Name="BatchHandling">Whole</Setting>
+  </Item>
 </Production>
 }
 

@@ -1,0 +1,16 @@
+SEM|194;2012;Fall;20
+STU|12345;Adams;John;Michael;2;john.michael.adams@example.com;333-333-3333
+CLS|18.034;1;Differential Equations;4
+CLS|21W.759;1;Writing Science Fiction;4
+CLS|11.02J;2;Making Public Policy;5
+STU|12346;Adams;Jane;Michelle;3;jane.michelle.adams@example.com;
+CLS|21L.285;1;Modern Fiction;3
+CLS|7.03;1;Genetics;4
+CLS|24.06J;2;Bioethic;5
+CLS|9.00;1;Introduction to Psychological Science;5
+CLS|18.175;1;Theory of Probability;5
+STU|12347;Jones;Robert;Alfred;1;bobby.jones@example.com;444-444-4444
+CLS|1.00;1;Introduction to Computers;5
+CLS|18.02;1;Calculus;4
+CLS|21L.285;1;Modern Fiction;3
+CLS|2.00B;2;Toy Design;4

@@ -5,7 +5,11 @@
         "docker-compose": {
             "service": "iris",
             "internalPort": 52773
+        },
+        "links": {
+            "terminal":"http://localhost:52000/terminal/"
         }
+
     },
     "git.ignoreLimitWarning": true,
     "sqltools.connections": [
@@ -19,6 +23,19 @@
             "askForPassword": false,
             "driver": "InterSystems IRIS",
             "name": "irishealth",
+            "username": "_system",
+            "password": "SYS"
+        },
+        {
+            "namespace": "USER",
+            "connectionMethod": "Server and Port",
+            "showSystem": false,
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 52000,
+            "askForPassword": false,
+            "driver": "InterSystems IRIS",
+            "name": "iris-code",
             "username": "_system",
             "password": "SYS"
         }

@@ -5,7 +5,7 @@ services:
     init: true
     build:
       context: .
-    image: iris-demo:latest
+    image: iris-demo:2021.1.0.215.0
     hostname: iris
     container_name: iris
     volumes: 

@@ -14,6 +14,6 @@ CREATE TABLE IF NOT EXISTS app.customer (
 	city varchar(100) NULL,
     active bool DEFAULT 't',
     category integer DEFAULT 1,
-	created timestamp NULL DEFAULT now(),
+	created timestamp NULL,
 	CONSTRAINT customer_pkey PRIMARY KEY (id)
 );

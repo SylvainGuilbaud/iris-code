@@ -30,26 +30,23 @@ Method testBatch(pRequest As JDBC.demo.msg.testBatch, Output pResponse As Ens.St
 	
 	try{
 					
-		set nbLignes = 0
+		set nbInserted = 0
 		set pResponse = ##class(Ens.StringResponse).%New()
 		
 		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
 
-		//Pour les tests, on truncate les tables avant insertion
 		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"DROP TABLE IF EXISTS app.ODS_Products"))
 
-		//Creer la table pour l'exemple
-		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"CREATE TABLE app.ODS_Products (id int8 NULL,productname varchar NULL,date_alimentation date NULL)"))		
+		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"CREATE TABLE app.ODS_Products (id int8 NULL,productname varchar NULL,date_alimentation timestamp NULL)"))		
 
-		set SqlInsertView = "INSERT into app.ODS_Products (ID,ProductName,Date_Alimentation) values (?,?,TO_DATE(?,'yyyy-mm-dd hh24:mi:ss'))"
+		set insertQuery = "INSERT into app.ODS_Products (ID,ProductName,Date_Alimentation) values (?,?,to_timestamp(?,'YYYY-MM-DD HH24:MI:SS'))"
 
-		$$$LOGINFO(SqlInsertView)
+		$$$TRACE(insertQuery)
 		
 		set batch = ..batchSize
 				
 		set end =""
 		set i=0
-		k ^testBatch
 		while i<..maxToInsert{
 			
 			set param = ""
@@ -73,15 +70,16 @@ Method testBatch(pRequest As JDBC.demo.msg.testBatch, Output pResponse As Ens.St
 				}	
 		     
 			set param = k
-			merge ^testBatch = param
 			
-			set sc = ..Adapter.ExecuteUpdateBatchParamArray(.nrows,SqlInsertView,.param)
+			set sc = ..Adapter.ExecuteUpdateBatchParamArray(.nrows,insertQuery,.param)
 
-			$$$LOGINFO(sc)	
+			if sc {
+				set nbInserted = nbInserted + nrows
+			} else {
+				$$$LOGWARNING("ERROR WHILE INSERTING : "_$system.Status.GetErrorText(sc))
+			}
 
 			k param
-				
-			set nbLignes = nbLignes + nrows
 				
 	}
 
@@ -89,7 +87,7 @@ Method testBatch(pRequest As JDBC.demo.msg.testBatch, Output pResponse As Ens.St
 
 	Set Delta = TimeStampEnd - TimeStampStart
 
-	set pResponse.StringValue = nbLignes_" in "_Delta
+	set pResponse.StringValue = nbInserted_" in "_Delta
 		
 	}
 	catch exp
@@ -106,12 +104,13 @@ Method INSERT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 	
 	try{
 		set pResponse = ##class(Ens.StringResponse).%New()
-		
-		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
+		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"TRUNCATE "_ ..SCHEMA _".customer"))
 
+		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
+		
 		set insertQuery = "INSERT into "_ ..SCHEMA _".customer (id,first_name,last_name,city,category) values (?,?,?,?,?)"
 
-		$$$LOGINFO(insertQuery_" batchSize:"_..batchSize)
+		$$$TRACE(insertQuery_" batchSize:"_..batchSize)
 				
 		set nbInserted=0,inserts=0
 		while inserts<..maxToInsert{
@@ -137,15 +136,12 @@ Method INSERT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 
 				set param(i) = 5
 
-				//do $INCREMENT(inserts)
 				set inserts = inserts + 1
 				q:(inserts=..maxToInsert)
 
 			}	
 		     
 			set param = i
-			$$$LOGINFO(param_" to insert "_param(1,1)_":"_param(1,2)_":"_param(1,3)_":"_param(1,4)_":"_param(1,5))
-			merge ^DEBUG = param
 			set sc = ..Adapter.ExecuteUpdateBatchParamArray(.nrows,insertQuery,.param)
 			if sc {
 				set nbInserted = nbInserted + nrows
@@ -153,9 +149,7 @@ Method INSERT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 				$$$LOGWARNING("ERROR WHILE INSERTING : "_$system.Status.GetErrorText(sc))
 			}
 
-			k param
-
-					
+			kill param		
 	}
 
 	Set TimeStampEnd = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
@@ -181,17 +175,263 @@ Method test(pRequest As JDBC.demo.msg.test, Output pResponse As Ens.StringRespon
 		
 		set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
 
-		set query=""
-		set query=query_"INSERT INTO "_ ..SCHEMA_".customer"
-		set query=query_" (id,first_name,last_name,city,category) values (?,?,?,?,?)"
+		set insertQuery = ""
+		set insertQuery = insertQuery_"INSERT into "_ ..SCHEMA _".customer "
+		set insertQuery = insertQuery_" ("
+		set insertQuery = insertQuery_" id"
+		set insertQuery = insertQuery_" ,active"
+		set insertQuery = insertQuery_" ,category"
+		set insertQuery = insertQuery_" ,city"
+		set insertQuery = insertQuery_" ,created"
+		set insertQuery = insertQuery_" ,first_name"
+		set insertQuery = insertQuery_" ,last_name) " 
+		set insertQuery = insertQuery_" values ("
+		set insertQuery = insertQuery_" ?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?"
+		#; set insertQuery = insertQuery_" ,to_timestamp(?,'YYYY-MM-DD HH24:MI:SS'"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" )"
+		$$$TRACE(insertQuery)
+		#; ID,active,category,city,created,firstName,lastName,originID
 		set originID=pRequest.originID
+		set active=pRequest.active
+		set category=pRequest.category
+		set city=pRequest.city
+		set created=pRequest.created
 		set firstName=pRequest.firstName
 		set lastName=pRequest.lastName
-		set city=pRequest.city
-		set category=pRequest.category
 
-		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,query,originID,firstName,lastName,city,category))
-		$$$LOGINFO(nrows_" inserted")		
+		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,originID,active,category,city,created,firstName,lastName))
+		#; $$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,originID,active,category,city,firstName,lastName))
+		if sc {
+			$$$TRACE(nrows_" inserted")
+			set pResponse.StringValue=nrows_" successfully inserted"
+		} else {
+			set pResponse.StringValue="ERROR WHILE INSERTING "_$system.Status.GetErrorText(sc)
+		}
+	}
+	catch exp
+	{
+		set sc = exp.AsStatus()
+	}
+	return sc
+}
+
+Method customers(pRequest As data.RM.customer.Batch, Output pResponse As Ens.StringResponse) As %Status
+{
+	set sc = $$$OK
+	
+	try{
+		set pResponse = ##class(Ens.StringResponse).%New()
+		#; $$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"TRUNCATE "_ ..SCHEMA _".customer"))
+
+		set nbInserted=0
+		for i=1:1:pRequest.Records.Count() {
+			set customer = ##class(JDBC.demo.msg.customerRequest).%New()
+			set customer.originID = pRequest.Records.GetAt(i).originID
+			set customer.active	 = pRequest.Records.GetAt(i).active
+			set customer.category	 = pRequest.Records.GetAt(i).category
+			set customer.city	= pRequest.Records.GetAt(i).city
+			set customer.created	= pRequest.Records.GetAt(i).created
+			set customer.firstName	= pRequest.Records.GetAt(i).firstName
+			set customer.lastName	= pRequest.Records.GetAt(i).lastName
+			set sc = ..customer(customer)
+			if sc {
+				do $INCREMENT(nbInserted) 
+			} else {
+				$$$LOGERROR("ERROR WHILE INSERTING CUSTOMER "_$system.Status.GetErrorText(sc))
+			}	
+		} 
+
+	set pResponse.StringValue = nbInserted
+		
+	}
+	catch exp
+	{
+		set sc = exp.AsStatus()
+	}
+	return sc
+}
+
+Method customer(pRequest As JDBC.demo.msg.customerRequest, Output pResponse As JDBC.demo.msg.customerResponse) As %Status
+{
+	set sc = $$$OK
+	
+	try{
+		set pResponse = ##class(JDBC.demo.msg.customerResponse).%New()
+		
+		set insertQuery = ""
+		set insertQuery = insertQuery_"INSERT into "_ ..SCHEMA _".customer "
+		set insertQuery = insertQuery_" ("
+		set insertQuery = insertQuery_" id"
+		set insertQuery = insertQuery_" ,active"
+		set insertQuery = insertQuery_" ,category"
+		set insertQuery = insertQuery_" ,city"
+		set insertQuery = insertQuery_" ,created"
+		set insertQuery = insertQuery_" ,first_name"
+		set insertQuery = insertQuery_" ,last_name) " 
+		set insertQuery = insertQuery_" values ("
+		set insertQuery = insertQuery_"  ?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" )"
+
+		set updateQuery = ""
+		set updateQuery = updateQuery_"UPDATE "_ ..SCHEMA _".customer "
+		set updateQuery = updateQuery_" SET "
+		set updateQuery = updateQuery_"  active = ?"
+		set updateQuery = updateQuery_" ,category = ?"
+		set updateQuery = updateQuery_" ,city = ?"
+		set updateQuery = updateQuery_" ,created = ?"
+		set updateQuery = updateQuery_" ,first_name = ?"
+		set updateQuery = updateQuery_" ,last_name = ? " 
+		set updateQuery = updateQuery_" WHERE "
+		set updateQuery = updateQuery_"  id = "_pRequest.originID
+
+		$$$TRACE(insertQuery)
+		$$$TRACE(updateQuery)
+		#; ID,active,category,city,created,firstName,lastName,originID
+		set originID=pRequest.originID
+		set active=pRequest.active
+		set category=pRequest.category
+		set city=pRequest.city
+		set created=pRequest.created
+		set firstName=pRequest.firstName
+		set lastName=pRequest.lastName
+
+		if ..customerExists(pRequest.originID) {
+			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,updateQuery,active,category,city,created,firstName,lastName))		
+		} else {
+			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,originID,active,category,city,created,firstName,lastName))
+		}
+		if sc {
+			$$$TRACE(nrows_" inserted")
+			set pResponse.result=nrows_" successfully inserted"
+		} else {
+			set pResponse.result="ERROR WHILE INSERTING "_$system.Status.GetErrorText(sc)
+		}
+	}
+	catch exp
+	{
+		set sc = exp.AsStatus()
+	}
+	return sc
+}
+
+Method customerExists(id As %Integer) As %Boolean
+{
+	set sc = $$$OK
+	
+	try{
+		set query = "",exist=0
+		set query = query_"SELECT 1 FROM "_ ..SCHEMA_".customer"
+		set query = query_" WHERE id = ?"
+		$$$TRACE(query)
+
+		$$$ThrowOnError(..Adapter.ExecuteQuery(.rs,query,id))
+
+		if rs.%Next() {
+			set exist = rs.%GetData(1)
+			$$$LOGINFO("exist:" _ exist)
+		} else {
+			$$$LOGINFO("NO DATA FOUND FOR ID "_id)
+		}
+	}
+	catch exp
+	{
+		set sc = exp.AsStatus()
+	}
+	return exist
+}
+
+Method customersBatch(pRequest As data.RM.customer.Batch, Output pResponse As Ens.StringResponse) As %Status
+{
+	set sc = $$$OK
+	
+	try{
+		set pResponse = ##class(Ens.StringResponse).%New()
+		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"TRUNCATE "_ ..SCHEMA _".customer"))
+
+		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
+		
+		set insertQuery = ""
+		set insertQuery = insertQuery_"INSERT into "_ ..SCHEMA _".customer "
+		#; set insertQuery = insertQuery_" (id,active,category,city,created,first_name,last_name) " 
+		#; set insertQuery = insertQuery_" values (?,?,?,?,?,?,?)"
+		#; set insertQuery = insertQuery_" (id,active,category,city,first_name,last_name) " 
+		#; set insertQuery = insertQuery_" values (?,?,?,?,?,?)"
+		set insertQuery = insertQuery_" (id,category,city,first_name,last_name) " 
+		set insertQuery = insertQuery_" values (?,?,?,?,?)"
+		$$$TRACE(insertQuery_" batchSize:"_..batchSize)
+				
+		set nbInserted=0,inserts=1
+		do {
+			set param = ""
+			set columnNumber = 0
+			for i=1:1:..batchSize {
+
+				do $INCREMENT(inserts)
+				q:(inserts>pRequest.Records.Count())
+
+				#; ID,active,category,city,created,firstName,lastName,originID
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = pRequest.Records.GetAt(inserts).ID
+				set param(i,columnNumber,"SqlType")=$$$SqlInteger
+
+				#; do $INCREMENT(columnNumber)
+				#; set param(i,columnNumber) = pRequest.Records.GetAt(inserts).active
+				#; set param(i,columnNumber,"SqlType")=$$$SqlBit
+
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = pRequest.Records.GetAt(inserts).category
+				set param(i,columnNumber,"SqlType")=$$$SqlInteger
+
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = pRequest.Records.GetAt(inserts).city
+				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
+
+				#; do $INCREMENT(columnNumber)
+				#; set param(i,columnNumber) = pRequest.Records.GetAt(inserts).created
+				#; set param(i,columnNumber,"SqlType")=$$$SqlTypeTimestamp
+			
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = pRequest.Records.GetAt(inserts).firstName
+				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
+
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = pRequest.Records.GetAt(inserts).lastName
+				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
+
+				set param(i) = columnNumber
+			}	
+		     
+			set param = i
+			kill ^DEBUG
+			merge ^DEBUG("params")=param
+			set sc = ..Adapter.ExecuteUpdateBatchParamArray(.nrows,insertQuery,.param)
+			if sc {
+				set nbInserted = nbInserted + nrows
+			} else {
+				$$$LOGWARNING("ERROR WHILE INSERTING : "_$system.Status.GetErrorText(sc))
+			}
+
+			kill param		
+		} while inserts<pRequest.Records.Count()
+
+	Set TimeStampEnd = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
+
+	Set Delta = TimeStampEnd - TimeStampStart
+
+	set pResponse.StringValue = nbInserted_" in "_Delta
+		
 	}
 	catch exp
 	{
@@ -211,6 +451,12 @@ XData MessageMap
 	</MapItem>
 	<MapItem MessageType="JDBC.demo.msg.testBatch"> 
 		<Method>testBatch</Method>
+	</MapItem>
+	<MapItem MessageType="data.RM.customer.Batch"> 
+		<Method>customers</Method>
+	</MapItem>
+	<MapItem MessageType="JDBC.demo.msg.customerRequest"> 
+		<Method>customer</Method>
 	</MapItem>
 </MapItems>
 }
