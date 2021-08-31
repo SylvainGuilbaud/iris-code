@@ -9,11 +9,9 @@ Property Adapter As JDBC.SQL.OutboundAdapter;
 
 Property batchSize As %Integer [ InitialExpression = 1000 ];
 
-Property maxToInsert As %Integer [ InitialExpression = 50000 ];
-
 Property SCHEMA As %String [ InitialExpression = "app" ];
 
-Parameter SETTINGS = "batchSize:JDBC,maxToInsert:JDBC,SCHEMA:app";
+Parameter SETTINGS = "batchSize:JDBC,SCHEMA:app";
 
 Parameter INVOCATION = "Queue";
 
@@ -35,11 +33,11 @@ Method testBatch(pRequest As JDBC.demo.msg.testBatch, Output pResponse As Ens.St
 		
 		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
 
-		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"DROP TABLE IF EXISTS app.ODS_Products"))
+		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"DROP TABLE IF EXISTS app.test"))
 
-		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"CREATE TABLE app.ODS_Products (id int8 NULL,productname varchar NULL,date_alimentation timestamp NULL)"))		
+		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"CREATE TABLE app.test (id integer,name varchar,ts timestamp)"))		
 
-		set insertQuery = "INSERT into app.ODS_Products (ID,ProductName,Date_Alimentation) values (?,?,to_timestamp(?,'YYYY-MM-DD HH24:MI:SS'))"
+		set insertQuery = "INSERT into app.test (id,name,ts) values (?,?,?)"
 
 		$$$TRACE(insertQuery)
 		
@@ -47,25 +45,26 @@ Method testBatch(pRequest As JDBC.demo.msg.testBatch, Output pResponse As Ens.St
 				
 		set end =""
 		set i=0
-		while i<..maxToInsert{
+		while i<pRequest.nb{
 			
 			set param = ""
 			
 			for k=1:1:..batchSize {
 				
+				do $INCREMENT(i)
+
 				set param(k,1) = i
 				set param(k,1,"SqlType")=$$$SqlInteger
 
 				set param(k,2) = ##class(%PopulateUtils).Name()
 				set param(k,2,"SqlType")=$$$SqlVarchar
 			
-				set param(k,3) = $ZDATETIME($NOW(),3)
-				set param(k,3,"SqlType")=$$$SqlVarchar
+				set param(k,3) = $ZDATETIME($h,3)
+				set param(k,3,"SqlType")=$$$SqlTypeTimestamp
 
 				set param(k) = 3
 
-				set i = i + 1
-				q:(i=..maxToInsert)
+				q:(i=pRequest.nb)
 							
 				}	
 		     
@@ -98,7 +97,7 @@ Method testBatch(pRequest As JDBC.demo.msg.testBatch, Output pResponse As Ens.St
 	Quit tStatus
 }
 
-Method INSERT(pRequest As JDBC.demo.msg.init, Output pResponse As Ens.StringResponse) As %Status
+Method init(pRequest As JDBC.demo.msg.init, Output pResponse As Ens.StringResponse) As %Status
 {
 	set sc = $$$OK
 	
@@ -108,12 +107,12 @@ Method INSERT(pRequest As JDBC.demo.msg.init, Output pResponse As Ens.StringResp
 
 		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
 		
-		set insertQuery = "INSERT into "_ ..SCHEMA _".customer (id,first_name,last_name,city,category,active,created) values (?,?,?,?,?,?,?)"
+		set insertQuery = "INSERT into "_ ..SCHEMA _".customer (id,first_name,last_name,city,category,active,created,hashtag) values (?,?,?,?,?,?,?,?)"
 
 		$$$TRACE(insertQuery_" batchSize:"_..batchSize)
 				
 		set nbInserted=0,inserts=0
-		while inserts<..maxToInsert{
+		while inserts<pRequest.nb{
 			
 			set param = ""
 			
@@ -122,17 +121,19 @@ Method INSERT(pRequest As JDBC.demo.msg.init, Output pResponse As Ens.StringResp
 				do $INCREMENT(inserts)
 
 				set columnNumber=0
+				set firstName=##class(%PopulateUtils).FirstName()
+				set lastName=##class(%PopulateUtils).LastName()
 
 				do $INCREMENT(columnNumber)
 				set param(i,columnNumber) = inserts
 				set param(i,columnNumber,"SqlType")=$$$SqlInteger
 
 				do $INCREMENT(columnNumber)
-				set param(i,columnNumber) = ##class(%PopulateUtils).FirstName()
+				set param(i,columnNumber) = firstName
 				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
 
 				do $INCREMENT(columnNumber)
-				set param(i,columnNumber) = ##class(%PopulateUtils).LastName()
+				set param(i,columnNumber) = lastName
 				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
 
 				do $INCREMENT(columnNumber)
@@ -151,9 +152,14 @@ Method INSERT(pRequest As JDBC.demo.msg.init, Output pResponse As Ens.StringResp
 				set param(i,columnNumber) = $zdt($h-$RANDOM(1000)_","_$random(86400),3)
 				set param(i,columnNumber,"SqlType")=$$$SqlTypeTimestamp
 
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = $system.Encryption.SHA1Hash(firstName_" "_lastName)
+				#; set param(i,columnNumber) = firstName
+				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
+
 				set param(i) = columnNumber
 
-				q:(inserts=..maxToInsert)
+				q:(inserts=pRequest.nb)
 
 			}	
 		     
@@ -200,7 +206,7 @@ Method customers(pRequest As data.RM.customer.Batch, Output pResponse As Ens.Str
 			set customer.created	= pRequest.Records.GetAt(i).created
 			set customer.firstName	= pRequest.Records.GetAt(i).firstName
 			set customer.lastName	= pRequest.Records.GetAt(i).lastName
-			set sc = ..customer(customer)
+			set sc = ..insertUpdate(customer)
 			if sc {
 				do $INCREMENT(nbInserted) 
 			} else {
@@ -218,7 +224,44 @@ Method customers(pRequest As data.RM.customer.Batch, Output pResponse As Ens.Str
 	return sc
 }
 
-Method customer(pRequest As JDBC.demo.msg.customerRequest, Output pResponse As JDBC.demo.msg.customerResponse) As %Status
+Method customersTransformed(pRequest As data.EXTERNAL.customer.Batch, Output pResponse As Ens.StringResponse) As %Status
+{
+	set sc = $$$OK
+	
+	try{
+		set pResponse = ##class(Ens.StringResponse).%New()
+		#; $$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,"TRUNCATE "_ ..SCHEMA _".customer"))
+
+		set nbInserted=0
+		for i=1:1:pRequest.records.Count() {
+			set customer = ##class(JDBC.demo.msg.customerRequest).%New()
+			set customer.id = pRequest.records.GetAt(i).id
+			set customer.active	 = pRequest.records.GetAt(i).active
+			set customer.category	 = pRequest.records.GetAt(i).category
+			set customer.city	= pRequest.records.GetAt(i).city
+			set customer.created	= pRequest.records.GetAt(i).created
+			set customer.firstName	= pRequest.records.GetAt(i).firstName
+			set customer.lastName	= pRequest.records.GetAt(i).lastName
+			set customer.hashtag = pRequest.records.GetAt(i).hashtag
+			set sc = ..insertUpdate(customer)
+			if sc {
+				do $INCREMENT(nbInserted) 
+			} else {
+				$$$LOGERROR("ERROR WHILE INSERTING CUSTOMER "_$system.Status.GetErrorText(sc))
+			}	
+		} 
+
+	set pResponse.StringValue = nbInserted
+		
+	}
+	catch exp
+	{
+		set sc = exp.AsStatus()
+	}
+	return sc
+}
+
+Method insertUpdate(pRequest As JDBC.demo.msg.customerRequest, Output pResponse As JDBC.demo.msg.customerResponse) As %Status
 {
 	set sc = $$$OK
 	
@@ -234,9 +277,12 @@ Method customer(pRequest As JDBC.demo.msg.customerRequest, Output pResponse As J
 		set insertQuery = insertQuery_" ,city"
 		set insertQuery = insertQuery_" ,created"
 		set insertQuery = insertQuery_" ,first_name"
-		set insertQuery = insertQuery_" ,last_name) " 
+		set insertQuery = insertQuery_" ,last_name "
+		set insertQuery = insertQuery_" ,hashtag "
+		set insertQuery = insertQuery_" ) " 
 		set insertQuery = insertQuery_" values ("
 		set insertQuery = insertQuery_"  ?"
+		set insertQuery = insertQuery_" ,?"
 		set insertQuery = insertQuery_" ,?"
 		set insertQuery = insertQuery_" ,?"
 		set insertQuery = insertQuery_" ,?"
@@ -253,7 +299,9 @@ Method customer(pRequest As JDBC.demo.msg.customerRequest, Output pResponse As J
 		set updateQuery = updateQuery_" ,city = ?"
 		set updateQuery = updateQuery_" ,created = ?"
 		set updateQuery = updateQuery_" ,first_name = ?"
-		set updateQuery = updateQuery_" ,last_name = ? " 
+		set updateQuery = updateQuery_" ,last_name = ? "
+		set updateQuery = updateQuery_" ,hashtag = ? "
+		set updateQuery = updateQuery_" ,lastUpdate = '"_$zdt($h,3)_"'" 
 		set updateQuery = updateQuery_" WHERE "
 		set updateQuery = updateQuery_"  id = "_pRequest.id
 
@@ -267,11 +315,12 @@ Method customer(pRequest As JDBC.demo.msg.customerRequest, Output pResponse As J
 		set created=pRequest.created
 		set firstName=pRequest.firstName
 		set lastName=pRequest.lastName
+		set hashtag=pRequest.hashtag
 
 		if ..customerExists(pRequest.id) {
-			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,updateQuery,active,category,city,created,firstName,lastName))		
+			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,updateQuery,active,category,city,created,firstName,lastName,hashtag))		
 		} else {
-			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,id,active,category,city,created,firstName,lastName))
+			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,id,active,category,city,created,firstName,lastName,hashtag))
 		}
 		if sc {
 			$$$TRACE(nrows_" inserted")
@@ -405,7 +454,7 @@ XData MessageMap
 {
 <MapItems>
 	<MapItem MessageType="JDBC.demo.msg.init"> 
-		<Method>INSERT</Method>
+		<Method>init</Method>
 	</MapItem>
 	<MapItem MessageType="JDBC.demo.msg.testBatch"> 
 		<Method>testBatch</Method>
@@ -414,8 +463,12 @@ XData MessageMap
 		<Method>customers</Method>
 	</MapItem>
 	<MapItem MessageType="JDBC.demo.msg.customerRequest"> 
-		<Method>customer</Method>
+		<Method>insertUpdate</Method>
 	</MapItem>
+	<MapItem MessageType="data.EXTERNAL.customer.Batch"> 
+		<Method>customersTransformed</Method>
+	</MapItem>
+	
 </MapItems>
 }
 

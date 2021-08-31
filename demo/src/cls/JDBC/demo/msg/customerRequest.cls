@@ -15,6 +15,8 @@ Property category As %Integer [ InitialExpression = {$RANDOM(5)+1} ];
 
 Property created As %TimeStamp [ InitialExpression = {$zdt($h-$RANDOM(1000)_","_$random(86400),3)} ];
 
+Property hashtag As %String(MAXLEN = "");
+
 Storage Default
 {
 <Data name="customerRequestDefaultData">
@@ -39,6 +41,9 @@ Storage Default
 </Value>
 <Value name="7">
 <Value>created</Value>
+</Value>
+<Value name="8">
+<Value>hashtag</Value>
 </Value>
 </Data>
 <DefaultData>customerRequestDefaultData</DefaultData>
