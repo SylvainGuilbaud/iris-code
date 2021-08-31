@@ -326,7 +326,7 @@ Method insertUpdate(pRequest As JDBC.demo.msg.customerRequest, Output pResponse 
 			$$$TRACE(nrows_" inserted")
 			set pResponse.result=nrows_" successfully inserted"
 		} else {
-			set pResponse.result="ERROR WHILE INSERTING "_$system.Status.GetErrorText(sc)
+			set pResponse.result="ERROR WHILE INSERTING "_pRequest.id_"("_$system.Status.GetErrorText(sc)_")"
 		}
 	}
 	catch exp
