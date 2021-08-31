@@ -107,7 +107,8 @@ Method init(pRequest As JDBC.demo.msg.init, Output pResponse As Ens.StringRespon
 
 		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
 		
-		set insertQuery = "INSERT into "_ ..SCHEMA _".customer (id,first_name,last_name,city,category,active,created,hashtag) values (?,?,?,?,?,?,?,?)"
+		set insertQuery = "INSERT into "_ ..SCHEMA _".customer (id,first_name,last_name,city,category,active,created,hashtag) values (?,?,?,?,?,?,?,?::bytea)"
+		#; set insertQuery = "INSERT into "_ ..SCHEMA _".customer (id,first_name,last_name,city,category,active,created) values (?,?,?,?,?,?,?)"
 
 		$$$TRACE(insertQuery_" batchSize:"_..batchSize)
 				
@@ -154,8 +155,7 @@ Method init(pRequest As JDBC.demo.msg.init, Output pResponse As Ens.StringRespon
 
 				do $INCREMENT(columnNumber)
 				set param(i,columnNumber) = $system.Encryption.SHA1Hash(firstName_" "_lastName)
-				#; set param(i,columnNumber) = firstName
-				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
+				set param(i,columnNumber,"SqlType")=$$$SqlBinary
 
 				set param(i) = columnNumber
 
@@ -288,7 +288,7 @@ Method insertUpdate(pRequest As JDBC.demo.msg.customerRequest, Output pResponse 
 		set insertQuery = insertQuery_" ,?"
 		set insertQuery = insertQuery_" ,?"
 		set insertQuery = insertQuery_" ,?"
-		set insertQuery = insertQuery_" ,?"
+		set insertQuery = insertQuery_" ,?::bytea"
 		set insertQuery = insertQuery_" )"
 
 		set updateQuery = ""
@@ -300,7 +300,7 @@ Method insertUpdate(pRequest As JDBC.demo.msg.customerRequest, Output pResponse 
 		set updateQuery = updateQuery_" ,created = ?"
 		set updateQuery = updateQuery_" ,first_name = ?"
 		set updateQuery = updateQuery_" ,last_name = ? "
-		set updateQuery = updateQuery_" ,hashtag = ? "
+		set updateQuery = updateQuery_" ,hashtag = ?::bytea "
 		set updateQuery = updateQuery_" ,lastUpdate = '"_$zdt($h,3)_"'" 
 		set updateQuery = updateQuery_" WHERE "
 		set updateQuery = updateQuery_"  id = "_pRequest.id

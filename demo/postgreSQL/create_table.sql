@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS app.customer (
 	city varchar(100) NULL,
     active bool DEFAULT 't',
     category integer DEFAULT 1,
-    hashtag varchar(20),
+    hashtag bytea,
 	created timestamp NULL,
     inserted timestamp NULL DEFAULT now(),
     lastUpdate timestamp NULL,
