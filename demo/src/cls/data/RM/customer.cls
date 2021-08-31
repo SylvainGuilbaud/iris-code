@@ -140,13 +140,6 @@ ClassMethod GetRecord(pStream As %IO.DeviceStream, pObject As %RegisteredObject,
 	If pGetTopFields {
 		Set pObject.lastName = tCurrString
 	}
-	If '$data(tRecordData(tCurrChunk, "block")) {
-		Set tCurrString = $piece(tRecordData(tCurrChunk), $char(44), tTopPiece)
-	}
-	Do ..checkMerge(.tCurrChunk, .tRecordData, .tCurrString, $char(44), .tTopPiece)
-	If pGetTopFields {
-		Set pObject.originID = tCurrString
-	}
 	Quit tStatus
 }
 
@@ -162,7 +155,6 @@ ClassMethod PutRecord(pStream As %IO.DeviceStream, pObject As %RegisteredObject,
 	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.created, $lb($char(44)),"quote",$char(34)),1: ""))
 	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.firstName, $lb($char(44)),"quote",$char(34)),1: ""))
 	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.lastName, $lb($char(44)),"quote",$char(34)),1: ""))
-	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.originID, $lb($char(44)),"quote",$char(34)),1: ""))
 	Set tStatus = tmpStream.Write($char(10))
 	If $$$ISERR(tStatus) Quit tStatus
 	Do pStream.CopyFrom(tmpStream,,0,.tStatus)
@@ -206,8 +198,6 @@ XData RecordMap [ XMLNamespace = "http://www.intersystems.com/Ensemble/RecordMap
   <Field name="firstName" datatype="%String" sqlColumn="7">
   </Field>
   <Field name="lastName" datatype="%String" sqlColumn="8">
-  </Field>
-  <Field name="originID" datatype="%String" sqlColumn="9">
   </Field>
 </Record>
 }

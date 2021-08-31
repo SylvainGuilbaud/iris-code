@@ -98,7 +98,7 @@ Method testBatch(pRequest As JDBC.demo.msg.testBatch, Output pResponse As Ens.St
 	Quit tStatus
 }
 
-Method INSERT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringResponse) As %Status
+Method INSERT(pRequest As JDBC.demo.msg.init, Output pResponse As Ens.StringResponse) As %Status
 {
 	set sc = $$$OK
 	
@@ -108,7 +108,7 @@ Method INSERT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 
 		Set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
 		
-		set insertQuery = "INSERT into "_ ..SCHEMA _".customer (id,first_name,last_name,city,category) values (?,?,?,?,?)"
+		set insertQuery = "INSERT into "_ ..SCHEMA _".customer (id,first_name,last_name,city,category,active,created) values (?,?,?,?,?,?,?)"
 
 		$$$TRACE(insertQuery_" batchSize:"_..batchSize)
 				
@@ -119,24 +119,40 @@ Method INSERT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 			
 			for i=1:1:..batchSize {
 				
-				set param(i,1) = $INCREMENT(^OriginID)
-				set param(i,1,"SqlType")=$$$SqlInteger
+				do $INCREMENT(inserts)
 
-				set param(i,2) = ##class(%PopulateUtils).FirstName()
-				set param(i,2,"SqlType")=$$$SqlVarchar
+				set columnNumber=0
 
-				set param(i,3) = ##class(%PopulateUtils).LastName()
-				set param(i,3,"SqlType")=$$$SqlVarchar
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = inserts
+				set param(i,columnNumber,"SqlType")=$$$SqlInteger
 
-				set param(i,4) = ##class(%PopulateUtils).City()
-				set param(i,4,"SqlType")=$$$SqlVarchar
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = ##class(%PopulateUtils).FirstName()
+				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
+
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = ##class(%PopulateUtils).LastName()
+				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
+
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = ##class(%PopulateUtils).City()
+				set param(i,columnNumber,"SqlType")=$$$SqlVarchar
 			
-				set param(i,5) = $RANDOM(5)+1
-				set param(i,5,"SqlType")=$$$SqlInteger
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = $RANDOM(5)+1
+				set param(i,columnNumber,"SqlType")=$$$SqlInteger
 
-				set param(i) = 5
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = $RANDOM(2)
+				set param(i,columnNumber,"SqlType")=$$$SqlBit
 
-				set inserts = inserts + 1
+				do $INCREMENT(columnNumber)
+				set param(i,columnNumber) = $zdt($h-$RANDOM(1000)_","_$random(86400),3)
+				set param(i,columnNumber,"SqlType")=$$$SqlTypeTimestamp
+
+				set param(i) = columnNumber
+
 				q:(inserts=..maxToInsert)
 
 			}	
@@ -166,61 +182,6 @@ Method INSERT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 	return sc
 }
 
-Method test(pRequest As JDBC.demo.msg.test, Output pResponse As Ens.StringResponse) As %Status
-{
-	set sc = $$$OK
-	
-	try{
-		set pResponse = ##class(Ens.StringResponse).%New()
-		
-		set TimeStampStart = ##class(%Library.PosixTime).LogicalToUnixTime(##class(%Library.PosixTime).CurrentTimeStamp())
-
-		set insertQuery = ""
-		set insertQuery = insertQuery_"INSERT into "_ ..SCHEMA _".customer "
-		set insertQuery = insertQuery_" ("
-		set insertQuery = insertQuery_" id"
-		set insertQuery = insertQuery_" ,active"
-		set insertQuery = insertQuery_" ,category"
-		set insertQuery = insertQuery_" ,city"
-		set insertQuery = insertQuery_" ,created"
-		set insertQuery = insertQuery_" ,first_name"
-		set insertQuery = insertQuery_" ,last_name) " 
-		set insertQuery = insertQuery_" values ("
-		set insertQuery = insertQuery_" ?"
-		set insertQuery = insertQuery_" ,?"
-		set insertQuery = insertQuery_" ,?"
-		set insertQuery = insertQuery_" ,?"
-		#; set insertQuery = insertQuery_" ,to_timestamp(?,'YYYY-MM-DD HH24:MI:SS'"
-		set insertQuery = insertQuery_" ,?"
-		set insertQuery = insertQuery_" ,?"
-		set insertQuery = insertQuery_" ,?"
-		set insertQuery = insertQuery_" )"
-		$$$TRACE(insertQuery)
-		#; ID,active,category,city,created,firstName,lastName,originID
-		set originID=pRequest.originID
-		set active=pRequest.active
-		set category=pRequest.category
-		set city=pRequest.city
-		set created=pRequest.created
-		set firstName=pRequest.firstName
-		set lastName=pRequest.lastName
-
-		$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,originID,active,category,city,created,firstName,lastName))
-		#; $$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,originID,active,category,city,firstName,lastName))
-		if sc {
-			$$$TRACE(nrows_" inserted")
-			set pResponse.StringValue=nrows_" successfully inserted"
-		} else {
-			set pResponse.StringValue="ERROR WHILE INSERTING "_$system.Status.GetErrorText(sc)
-		}
-	}
-	catch exp
-	{
-		set sc = exp.AsStatus()
-	}
-	return sc
-}
-
 Method customers(pRequest As data.RM.customer.Batch, Output pResponse As Ens.StringResponse) As %Status
 {
 	set sc = $$$OK
@@ -232,7 +193,7 @@ Method customers(pRequest As data.RM.customer.Batch, Output pResponse As Ens.Str
 		set nbInserted=0
 		for i=1:1:pRequest.Records.Count() {
 			set customer = ##class(JDBC.demo.msg.customerRequest).%New()
-			set customer.originID = pRequest.Records.GetAt(i).originID
+			set customer.id = pRequest.Records.GetAt(i).id
 			set customer.active	 = pRequest.Records.GetAt(i).active
 			set customer.category	 = pRequest.Records.GetAt(i).category
 			set customer.city	= pRequest.Records.GetAt(i).city
@@ -294,12 +255,12 @@ Method customer(pRequest As JDBC.demo.msg.customerRequest, Output pResponse As J
 		set updateQuery = updateQuery_" ,first_name = ?"
 		set updateQuery = updateQuery_" ,last_name = ? " 
 		set updateQuery = updateQuery_" WHERE "
-		set updateQuery = updateQuery_"  id = "_pRequest.originID
+		set updateQuery = updateQuery_"  id = "_pRequest.id
 
 		$$$TRACE(insertQuery)
 		$$$TRACE(updateQuery)
-		#; ID,active,category,city,created,firstName,lastName,originID
-		set originID=pRequest.originID
+		#; id,active,category,city,created,firstName,lastName
+		set id=pRequest.id
 		set active=pRequest.active
 		set category=pRequest.category
 		set city=pRequest.city
@@ -307,10 +268,10 @@ Method customer(pRequest As JDBC.demo.msg.customerRequest, Output pResponse As J
 		set firstName=pRequest.firstName
 		set lastName=pRequest.lastName
 
-		if ..customerExists(pRequest.originID) {
+		if ..customerExists(pRequest.id) {
 			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,updateQuery,active,category,city,created,firstName,lastName))		
 		} else {
-			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,originID,active,category,city,created,firstName,lastName))
+			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,id,active,category,city,created,firstName,lastName))
 		}
 		if sc {
 			$$$TRACE(nrows_" inserted")
@@ -340,7 +301,7 @@ Method customerExists(id As %Integer) As %Boolean
 
 		if rs.%Next() {
 			set exist = rs.%GetData(1)
-			$$$LOGINFO("exist:" _ exist)
+			$$$LOGINFO(id_" already exists:" _ exist)
 		} else {
 			$$$LOGINFO("NO DATA FOUND FOR ID "_id)
 		}
@@ -381,7 +342,7 @@ Method customersBatch(pRequest As data.RM.customer.Batch, Output pResponse As En
 				do $INCREMENT(inserts)
 				q:(inserts>pRequest.Records.Count())
 
-				#; ID,active,category,city,created,firstName,lastName,originID
+				#; ID,active,category,city,created,firstName,lastName
 				do $INCREMENT(columnNumber)
 				set param(i,columnNumber) = pRequest.Records.GetAt(inserts).ID
 				set param(i,columnNumber,"SqlType")=$$$SqlInteger
@@ -443,11 +404,8 @@ Method customersBatch(pRequest As data.RM.customer.Batch, Output pResponse As En
 XData MessageMap
 {
 <MapItems>
-	<MapItem MessageType="Ens.StringRequest"> 
+	<MapItem MessageType="JDBC.demo.msg.init"> 
 		<Method>INSERT</Method>
-	</MapItem>
-	<MapItem MessageType="JDBC.demo.msg.test"> 
-		<Method>test</Method>
 	</MapItem>
 	<MapItem MessageType="JDBC.demo.msg.testBatch"> 
 		<Method>testBatch</Method>

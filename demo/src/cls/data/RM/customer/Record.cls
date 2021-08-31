@@ -6,7 +6,7 @@ Class data.RM.customer.Record Extends (%Persistent, %XML.Adaptor, Ens.Request, E
 
 Parameter INCLUDETOPFIELDS = 1;
 
-Property ID As %String [ SqlColumnNumber = 2 ];
+Property id As %String [ SqlColumnNumber = 2 ];
 
 Property active As %Boolean [ SqlColumnNumber = 3 ];
 
@@ -20,7 +20,11 @@ Property firstName As %String [ SqlColumnNumber = 7 ];
 
 Property lastName As %String [ SqlColumnNumber = 8 ];
 
-Property originID As %String [ SqlColumnNumber = 9 ];
+Parameter RECORDMAPGENERATED = 1;
+
+Relationship %ParentBatch As data.RM.customer.Batch [ Cardinality = one, Inverse = Records ];
+
+Index %ParentBatchIdx On %ParentBatch;
 
 Storage Default
 {
@@ -29,7 +33,7 @@ Storage Default
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>ID</Value>
+<Value>id</Value>
 </Value>
 <Value name="3">
 <Value>%Source</Value>
@@ -50,13 +54,10 @@ Storage Default
 <Value>lastName</Value>
 </Value>
 <Value name="9">
-<Value>originID</Value>
+<Value>%ParentBatch</Value>
 </Value>
 <Value name="10">
 <Value>active</Value>
-</Value>
-<Value name="11">
-<Value>%ParentBatch</Value>
 </Value>
 </Data>
 <DataLocation>^data.RM.customer.RecordD</DataLocation>
@@ -67,11 +68,5 @@ Storage Default
 <StreamLocation>^data.RM.customer.RecordS</StreamLocation>
 <Type>%Storage.Persistent</Type>
 }
-
-Parameter RECORDMAPGENERATED = 1;
-
-Relationship %ParentBatch As data.RM.customer.Batch [ Cardinality = one, Inverse = Records ];
-
-Index %ParentBatchIdx On %ParentBatch;
 
 }

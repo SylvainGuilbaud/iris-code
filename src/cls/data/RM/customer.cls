@@ -1,5 +1,5 @@
 /// RECORDMAP: Modified during compilation of RecordMap 'data.RM.customer'
-/// on 2021-08-31 at 13:56:50.229 [2021-08-31 13:56:50.229 UTC]
+/// on 2021-08-31 at 16:54:34.223 [2021-08-31 16:54:34.223 UTC]
 /// by user _SYSTEM
 Class data.RM.customer Extends EnsLib.RecordMap.RecordMap
 {
@@ -96,21 +96,21 @@ ClassMethod GetRecord(pStream As %IO.DeviceStream, pObject As %RegisteredObject,
 	}
 	Do ..checkMerge(.tCurrChunk, .tRecordData, .tCurrString, $char(44), .tTopPiece)
 	If pGetTopFields {
-		Set pObject.ID = tCurrString
+		Set pObject.id =  pObject.idDisplayToLogical(tCurrString)
 	}
 	If '$data(tRecordData(tCurrChunk, "block")) {
 		Set tCurrString = $piece(tRecordData(tCurrChunk), $char(44), tTopPiece)
 	}
 	Do ..checkMerge(.tCurrChunk, .tRecordData, .tCurrString, $char(44), .tTopPiece)
 	If pGetTopFields {
-		Set pObject.active = tCurrString
+		Set pObject.active =  pObject.activeDisplayToLogical(tCurrString)
 	}
 	If '$data(tRecordData(tCurrChunk, "block")) {
 		Set tCurrString = $piece(tRecordData(tCurrChunk), $char(44), tTopPiece)
 	}
 	Do ..checkMerge(.tCurrChunk, .tRecordData, .tCurrString, $char(44), .tTopPiece)
 	If pGetTopFields {
-		Set pObject.category = tCurrString
+		Set pObject.category =  pObject.categoryDisplayToLogical(tCurrString)
 	}
 	If '$data(tRecordData(tCurrChunk, "block")) {
 		Set tCurrString = $piece(tRecordData(tCurrChunk), $char(44), tTopPiece)
@@ -124,7 +124,7 @@ ClassMethod GetRecord(pStream As %IO.DeviceStream, pObject As %RegisteredObject,
 	}
 	Do ..checkMerge(.tCurrChunk, .tRecordData, .tCurrString, $char(44), .tTopPiece)
 	If pGetTopFields {
-		Set pObject.created = tCurrString
+		Set pObject.created =  pObject.createdDisplayToLogical(tCurrString)
 	}
 	If '$data(tRecordData(tCurrChunk, "block")) {
 		Set tCurrString = $piece(tRecordData(tCurrChunk), $char(44), tTopPiece)
@@ -140,13 +140,6 @@ ClassMethod GetRecord(pStream As %IO.DeviceStream, pObject As %RegisteredObject,
 	If pGetTopFields {
 		Set pObject.lastName = tCurrString
 	}
-	If '$data(tRecordData(tCurrChunk, "block")) {
-		Set tCurrString = $piece(tRecordData(tCurrChunk), $char(44), tTopPiece)
-	}
-	Do ..checkMerge(.tCurrChunk, .tRecordData, .tCurrString, $char(44), .tTopPiece)
-	If pGetTopFields {
-		Set pObject.originID = tCurrString
-	}
 	Quit tStatus
 }
 
@@ -155,14 +148,13 @@ ClassMethod PutRecord(pStream As %IO.DeviceStream, pObject As %RegisteredObject,
 {
 	Set tStatus = $$$OK
 	Set tmpStream=##class(%Stream.TmpBinary).%New()
-	Do tmpStream.Write($select(pHasTopFields: ..Escape(pObject.ID, $lb($char(44)),"quote",$char(34)),1: ""))
-	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.active, $lb($char(44)),"quote",$char(34)),1: ""))
-	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.category, $lb($char(44)),"quote",$char(34)),1: ""))
+	Do tmpStream.Write($select(pHasTopFields: ..Escape(pObject.idLogicalToDisplay(pObject.id), $lb($char(44)),"quote",$char(34)),1: ""))
+	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.activeLogicalToDisplay(pObject.active), $lb($char(44)),"quote",$char(34)),1: ""))
+	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.categoryLogicalToDisplay(pObject.category), $lb($char(44)),"quote",$char(34)),1: ""))
 	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.city, $lb($char(44)),"quote",$char(34)),1: ""))
-	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.created, $lb($char(44)),"quote",$char(34)),1: ""))
+	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.createdLogicalToDisplay(pObject.created), $lb($char(44)),"quote",$char(34)),1: ""))
 	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.firstName, $lb($char(44)),"quote",$char(34)),1: ""))
 	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.lastName, $lb($char(44)),"quote",$char(34)),1: ""))
-	Do tmpStream.Write($char(44) _ $select(pHasTopFields: ..Escape(pObject.originID, $lb($char(44)),"quote",$char(34)),1: ""))
 	Set tStatus = tmpStream.Write($char(10))
 	If $$$ISERR(tStatus) Quit tStatus
 	Do pStream.CopyFrom(tmpStream,,0,.tStatus)
@@ -194,21 +186,19 @@ XData RecordMap [ XMLNamespace = "http://www.intersystems.com/Ensemble/RecordMap
   <Separators>
     <Separator>,</Separator>
   </Separators>
-  <Field name="ID" datatype="%String" sqlColumn="2">
+  <Field name="id" required="0" ignored="0" datatype="%Integer" sqlColumn="2" repeating="0">
   </Field>
-  <Field name="active" datatype="%String" sqlColumn="3">
+  <Field name="active" required="0" ignored="0" datatype="%Boolean" sqlColumn="3" repeating="0">
   </Field>
-  <Field name="category" datatype="%String" sqlColumn="4">
+  <Field name="category" required="0" ignored="0" datatype="%Integer" sqlColumn="4" repeating="0">
   </Field>
   <Field name="city" datatype="%String" sqlColumn="5">
   </Field>
-  <Field name="created" datatype="%String" sqlColumn="6">
+  <Field name="created" required="0" ignored="0" datatype="%TimeStamp" sqlColumn="6" repeating="0">
   </Field>
   <Field name="firstName" datatype="%String" sqlColumn="7">
   </Field>
   <Field name="lastName" datatype="%String" sqlColumn="8">
-  </Field>
-  <Field name="originID" datatype="%String" sqlColumn="9">
   </Field>
 </Record>
 }

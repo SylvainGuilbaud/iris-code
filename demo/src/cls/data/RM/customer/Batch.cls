@@ -3,7 +3,7 @@ Class data.RM.customer.Batch Extends (%Persistent, %XML.Adaptor, Ens.Request, En
 
 Parameter RECORDMAPGENERATED = 1;
 
-Parameter BatchHeader = "ID,active,category,city,created,firstName,lastName,originID";
+Parameter BatchHeader = "id,active,category,city,created,firstName,lastName";
 
 Parameter HeaderTerm = "\x0a";
 
