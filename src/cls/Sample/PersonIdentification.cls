@@ -1,4 +1,5 @@
-/// This sample registered object represent the identification information for a person.  This class is used to illustrate return a list of objects using XML.
+/// This sample registered object represent the identification information for a person.  
+/// This class is used to illustrate return a list of objects using XML.
 Class Sample.PersonIdentification Extends (%RegisteredObject, %XML.Adaptor)
 {
 

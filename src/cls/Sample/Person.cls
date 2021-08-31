@@ -1,4 +1,5 @@
-/// This sample persistent class represents a person.<p>Maintenance note: This class is used by some of the bindings samples.
+/// This sample persistent class represents a person.
+/// <p>Maintenance note: This class is used by some of the bindings samples.
 Class Sample.Person Extends (%Persistent, %Populate, %XML.Adaptor)
 {
 
@@ -38,8 +39,10 @@ Property Spouse As Person;
 /// A collection of strings representing the person's favorite colors.
 Property FavoriteColors As list Of %String(JAVATYPE = "java.util.List", POPSPEC = "ValueList("",Red,Orange,Yellow,Green,Blue,Purple,Black,White""):2");
 
-/// Person's age.<br>This is a calculated field whose value is derived from <property>DOB</property>.
-Property Age As %Integer [ Calculated, SqlComputeCode = { Set {Age}=##class(Sample.Person).CurrentAge({DOB})}, SqlComputed, SqlComputeOnChange = DOB ];
+/// Person's age.<br>
+/// This is a calculated field whose value is derived from <property>DOB</property>.
+Property Age As %Integer [ Calculated, SqlComputeCode = { Set {Age}=##class(Sample.Person).CurrentAge({DOB})
+}, SqlComputed, SqlComputeOnChange = DOB ];
 
 /// This class method calculates a current age given a date of birth <var>date</var>.
 ClassMethod CurrentAge(date As %Date = "") As %Integer [ CodeMode = expression ]
@@ -50,10 +53,12 @@ $Select(date="":"",1:($ZD($H,8)-$ZD(date,8)\10000))
 /// Prints the property <property>Name</property> to the console.
 Method PrintPerson()
 {
-	Write !, "Name: ", ..Name	Quit
+	Write !, "Name: ", ..Name
+	Quit
 }
 
-/// A simple, sample method: add two numbers (<var>x</var> and <var>y</var>) and return the result.
+/// A simple, sample method: add two numbers (<var>x</var> and <var>y</var>) 
+/// and return the result.
 Method Addition(x As %Integer = 1, y As %Integer = 1) As %Integer
 {
 	Quit x + y // comment
@@ -65,34 +70,84 @@ Method NinetyNine() As %Integer [ CodeMode = expression ]
 99
 }
 
-/// Invoke the <method>PrintPerson</method> on all <class>Person</class> objects within the database.
+/// Invoke the <method>PrintPerson</method> on all <class>Person</class> objects 
+/// within the database.
 ClassMethod PrintPersons()
 {
-	// use the extent result set to find all person	Set extent = ##class(%ResultSet).%New("Sample.Person:Extent")	Do extent.Execute()		While (extent.Next()) {		Set person = ..%OpenId(extent.GetData(1))		Do person.PrintPerson()	}		Quit
+	// use the extent result set to find all person
+	Set extent = ##class(%ResultSet).%New("Sample.Person:Extent")
+	Do extent.Execute()
+	
+	While (extent.Next()) {
+		Set person = ..%OpenId(extent.GetData(1))
+		Do person.PrintPerson()
+	}
+	
+	Quit
 }
 
-/// Prints out data on all persons within the database using SQL to iterate over all the person data.
+/// Prints out data on all persons within the database using SQL to 
+/// iterate over all the person data.
 ClassMethod PrintPersonsSQL()
 {
-	// use dynamic SQL result set to find person data	Set query = ##class(%ResultSet).%New("%DynamicQuery:SQL")	Do query.Prepare("SELECT ID, Name, SSN FROM Sample.Person ORDER BY Name")	Do query.Execute()		While (query.Next()) {		Write !,"Name: ", query.Get("Name"), ?30, query.Get("SSN")	}		Quit
+	// use dynamic SQL result set to find person data
+	Set query = ##class(%ResultSet).%New("%DynamicQuery:SQL")
+	Do query.Prepare("SELECT ID, Name, SSN FROM Sample.Person ORDER BY Name")
+	Do query.Execute()
+	
+	While (query.Next()) {
+		Write !,"Name: ", query.Get("Name"), ?30, query.Get("SSN")
+	}
+	
+	Quit
 }
 
-/// This is a sample of how to define an SQL stored procedure using a class method. This method can be called as a stored procedure via ODBC or JDBC.<br>In this case this method returns the concatenation of a string value.
+/// This is a sample of how to define an SQL stored procedure using a 
+/// class method. This method can be called as a stored procedure via 
+/// ODBC or JDBC.<br>
+/// In this case this method returns the concatenation of a string value.
 ClassMethod StoredProcTest(name As %String, ByRef response As %String) As %Integer [ SqlName = Stored_Procedure_Test, SqlProc ]
 {
-	// Set response to the concatenation of name.	Set response = name _ "||" _ name	QUIT 29
+	// Set response to the concatenation of name.
+	Set response = name _ "||" _ name
+	QUIT 29
 }
 
-/// This is a sample of how to define an SQL stored procedure using a class method. This method can be called as a stored procedure via ODBC or JDBC.<br>This method performs an SQL update operation on the database using embedded SQL. The update modifies the embedded properties <var>Home.City</var> and <var>Home.State</var> for all rows whose <var>Home.Zip</var> is equal to <var>zip</var>.
+/// This is a sample of how to define an SQL stored procedure using a 
+/// class method. This method can be called as a stored procedure via 
+/// ODBC or JDBC.<br>
+/// This method performs an SQL update operation on the database 
+/// using embedded SQL. The update modifies the embedded properties 
+/// <var>Home.City</var> and <var>Home.State</var> for all rows whose 
+/// <var>Home.Zip</var> is equal to <var>zip</var>.
 ClassMethod UpdateProcTest(zip As %String, city As %String, state As %String) As %Integer [ SqlProc ]
 {
-	New %ROWCOUNT,%ROWID		&sql(UPDATE Sample.Person 	SET Home_City = :city, Home_State = :state 	WHERE Home_Zip = :zip)		// Return context information to client via %SQLProcContext object	If ($g(%sqlcontext)'=$$$NULLOREF) { 		Set %sqlcontext.SQLCode = SQLCODE		Set %sqlcontext.RowCount = %ROWCOUNT	}	QUIT 1
+	New %ROWCOUNT,%ROWID
+	
+	&sql(UPDATE Sample.Person 
+	SET Home_City = :city, Home_State = :state 
+	WHERE Home_Zip = :zip)
+	
+	// Return context information to client via %SQLProcContext object
+	If ($g(%sqlcontext)'=$$$NULLOREF) { 
+		Set %sqlcontext.SQLCode = SQLCODE
+		Set %sqlcontext.RowCount = %ROWCOUNT
+	}
+	QUIT 1
 }
 
-/// A sample class query that defines a result set that returns Person data ordered by <property>Name</property>.<br>This query can be used within another Cach&eacute; method (using the<class>%ResultSet</class> class), from Java, or from ActiveX.<br>This query is also accessible from ODBC and/or JDBC as the SQL stored procedure <b>SP_Sample_By_Name</b>.
+/// A sample class query that defines a result set that returns Person data 
+/// ordered by <property>Name</property>.<br>
+/// This query can be used within another Cach&eacute; method (using the
+/// <class>%ResultSet</class> class), from Java, or from ActiveX.<br>
+/// This query is also accessible from ODBC and/or JDBC as the SQL stored procedure 
+/// <b>SP_Sample_By_Name</b>.
 Query ByName(name As %String = "") As %SQLQuery(CONTAINID = 1, SELECTMODE = "RUNTIME") [ SqlName = SP_Sample_By_Name, SqlProc ]
 {
-SELECT ID, Name, DOB, SSN FROM Sample.Person WHERE (Name %STARTSWITH :name) ORDER BY Name
+SELECT ID, Name, DOB, SSN
+FROM Sample.Person
+WHERE (Name %STARTSWITH :name)
+ORDER BY Name
 }
 
 Storage Default
@@ -125,64 +180,65 @@ Storage Default
 </Data>
 <DataLocation>^Sample.PersonD</DataLocation>
 <DefaultData>PersonDefaultData</DefaultData>
-<ExtentSize>11</ExtentSize>
+<ExtentSize>200</ExtentSize>
 <IdLocation>^Sample.PersonD</IdLocation>
 <IndexLocation>^Sample.PersonI</IndexLocation>
 <Property name="%%CLASSNAME">
-<AverageFieldSize>2</AverageFieldSize>
-<Selectivity>100.0000%</Selectivity>
+<AverageFieldSize>8.5</AverageFieldSize>
+<Selectivity>50.0000%</Selectivity>
 </Property>
 <Property name="%%ID">
-<AverageFieldSize>3</AverageFieldSize>
+<AverageFieldSize>2.46</AverageFieldSize>
 <Selectivity>1</Selectivity>
 </Property>
 <Property name="Age">
-<AverageFieldSize>3</AverageFieldSize>
-<Selectivity>9.0909%</Selectivity>
+<AverageFieldSize>1.91</AverageFieldSize>
+<Selectivity>1.2048%</Selectivity>
 </Property>
 <Property name="DOB">
-<AverageFieldSize>4</AverageFieldSize>
-<Selectivity>9.0909%</Selectivity>
+<AverageFieldSize>5</AverageFieldSize>
+<Selectivity>0.5000%</Selectivity>
 </Property>
 <Property name="FavoriteColors">
-<AverageFieldSize>10.36</AverageFieldSize>
-<Selectivity>11.1111%</Selectivity>
+<AverageFieldSize>6.34</AverageFieldSize>
+<OutlierSelectivity>.355:</OutlierSelectivity>
+<Selectivity>1.5357%</Selectivity>
 </Property>
 <Property name="Home">
-<AverageFieldSize>39.18,City:9.73,State:4,Street:19.09,Zip:4.36</AverageFieldSize>
-<Selectivity>9.0909%,City:9.0909%,State:11.1111%,Street:9.0909%,Zip:9.0909%</Selectivity>
+<AverageFieldSize>36.04,City:7.15,State:2,Street:16.47,Zip:5</AverageFieldSize>
+<Selectivity>0.5000%,City:3.8462%,State:2.0000%,Street:0.5000%,Zip:0.5000%</Selectivity>
 </Property>
 <Property name="Name">
-<AverageFieldSize>18.09</AverageFieldSize>
-<Selectivity>9.0909%</Selectivity>
+<AverageFieldSize>15.96</AverageFieldSize>
+<Selectivity>0.5000%</Selectivity>
 </Property>
 <Property name="Office">
-<AverageFieldSize>39.91,City:9.73,State:4,Street:19.82,Zip:4.36</AverageFieldSize>
-<Selectivity>9.0909%,City:11.1111%,State:11.1111%,Street:9.0909%,Zip:9.0909%</Selectivity>
+<AverageFieldSize>36.03,City:7,State:2,Street:16.68,Zip:5</AverageFieldSize>
+<Selectivity>0.5000%,City:3.8462%,State:2.0833%,Street:0.5000%,Zip:0.5000%</Selectivity>
 </Property>
 <Property name="SSN">
-<AverageFieldSize>13</AverageFieldSize>
+<AverageFieldSize>11</AverageFieldSize>
 <Selectivity>1</Selectivity>
 </Property>
 <Property name="Spouse">
-<AverageFieldSize>2.09</AverageFieldSize>
-<OutlierSelectivity>.909091:</OutlierSelectivity>
-<Selectivity>9.0909%</Selectivity>
+<AverageFieldSize>.97</AverageFieldSize>
+<OutlierSelectivity>.5:</OutlierSelectivity>
+<Selectivity>0.7813%</Selectivity>
 </Property>
 <SQLMap name="$Person">
 <BlockCount>-4</BlockCount>
 </SQLMap>
 <SQLMap name="IDKEY">
-<BlockCount>-4</BlockCount>
+<BlockCount>-20</BlockCount>
 </SQLMap>
 <SQLMap name="NameIDX">
-<BlockCount>-4</BlockCount>
+<BlockCount>-8</BlockCount>
 </SQLMap>
 <SQLMap name="SSNKey">
-<BlockCount>-4</BlockCount>
+<BlockCount>-8</BlockCount>
 </SQLMap>
 <SQLMap name="ZipCode">
-<BlockCount>-4</BlockCount>
+<BlockCount>-8</BlockCount>
 </SQLMap>
 <StreamLocation>^Sample.PersonS</StreamLocation>
 <Type>%Storage.Persistent</Type>

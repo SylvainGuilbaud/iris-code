@@ -1,4 +1,6 @@
-/// This class represents a U.S. ZIP (Zone Improvement Plan) Code and corresponding State and City name. The sample datasetincludes values for the northeastern United States.
+/// This class represents a U.S. ZIP (Zone Improvement Plan) 
+/// Code and corresponding State and City name. The sample dataset
+/// includes values for the northeastern United States.
 Class Sample.USZipCode Extends (%Persistent, %XML.Adaptor) [ Final ]
 {
 

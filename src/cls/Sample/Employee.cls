@@ -17,16 +17,29 @@ Property Picture As %Stream.GlobalBinary;
 /// The company this employee works for.
 Relationship Company As Company [ Cardinality = one, Inverse = Employees ];
 
-/// This method overrides the method in <class>Person</class>.<br>Prints the properties <property>Name</property> and <property>Title</property> to the console.
+/// This method overrides the method in <class>Person</class>.<br>
+/// Prints the properties <property>Name</property> and <property>Title</property> 
+/// to the console.
 Method PrintPerson()
 {
-	Write !,"Name: ", ..Name, ?30, "Title: ", ..Title	Quit
+	Write !,"Name: ", ..Name, ?30, "Title: ", ..Title
+	Quit
 }
 
-/// writes a .png file containing the picture, if any, of this employeethe purpose of this method is to prove that Picture really contains an image
+/// writes a .png file containing the picture, if any, of this employee
+/// the purpose of this method is to prove that Picture really contains an image
 Method WritePicture()
 {
-	if (..Picture="") {quit}	set name=$TR(..Name,".") ; strip off trailing period	set name=$TR(name,", ","__") ; replace commas and spaces	set filename=name_".png"		set file=##class(%Stream.FileBinary).%New()	set file.Filename=filename	do file.CopyFrom(..Picture)	do file.%Save()	write !, "Generated file: "_filename
+	if (..Picture="") {quit}
+	set name=$TR(..Name,".") ; strip off trailing period
+	set name=$TR(name,", ","__") ; replace commas and spaces
+	set filename=name_".png"
+	
+	set file=##class(%Stream.FileBinary).%New()
+	set file.Filename=filename
+	do file.CopyFrom(..Picture)
+	do file.%Save()
+	write !, "Generated file: "_filename
 }
 
 Storage Default
@@ -60,11 +73,11 @@ Storage Default
 <Selectivity>1</Selectivity>
 </Property>
 <Property name="Age">
-<AverageFieldSize>1.93</AverageFieldSize>
-<Selectivity>1.5152%</Selectivity>
+<AverageFieldSize>1.9</AverageFieldSize>
+<Selectivity>1.4706%</Selectivity>
 </Property>
 <Property name="Company">
-<AverageFieldSize>1.54</AverageFieldSize>
+<AverageFieldSize>1.61</AverageFieldSize>
 <Selectivity>5.0000%</Selectivity>
 </Property>
 <Property name="DOB">
@@ -72,24 +85,24 @@ Storage Default
 <Selectivity>1.0000%</Selectivity>
 </Property>
 <Property name="FavoriteColors">
-<AverageFieldSize>6</AverageFieldSize>
-<OutlierSelectivity>.41:</OutlierSelectivity>
-<Selectivity>1.8438%</Selectivity>
+<AverageFieldSize>6.23</AverageFieldSize>
+<OutlierSelectivity>.36:</OutlierSelectivity>
+<Selectivity>2.3704%</Selectivity>
 </Property>
 <Property name="Home">
-<AverageFieldSize>36.36,City:7.25,State:2,Street:16.76,Zip:5</AverageFieldSize>
-<Selectivity>1.0000%,City:4.0000%,State:2.3256%,Street:1.0000%,Zip:1.0000%</Selectivity>
+<AverageFieldSize>36.28,City:7.26,State:2,Street:16.69,Zip:5</AverageFieldSize>
+<Selectivity>1.0000%,City:3.8462%,State:2.1739%,Street:1.0000%,Zip:1.0000%</Selectivity>
 </Property>
 <Property name="Name">
-<AverageFieldSize>15.76</AverageFieldSize>
+<AverageFieldSize>16.26</AverageFieldSize>
 <Selectivity>1.0000%</Selectivity>
 </Property>
 <Property name="Notes">
 <Selectivity>100.0000%</Selectivity>
 </Property>
 <Property name="Office">
-<AverageFieldSize>36.53,City:7.06,State:2,Street:17.09,Zip:5</AverageFieldSize>
-<Selectivity>1.0000%,City:4.0000%,State:2.2222%,Street:1.0000%,Zip:1.0000%</Selectivity>
+<AverageFieldSize>36.09,City:7.16,State:2,Street:16.59,Zip:5</AverageFieldSize>
+<Selectivity>1.0000%,City:4.1667%,State:2.4390%,Street:1.0000%,Zip:1.0000%</Selectivity>
 </Property>
 <Property name="Picture">
 <Selectivity>100.0000%</Selectivity>
@@ -99,16 +112,16 @@ Storage Default
 <Selectivity>1</Selectivity>
 </Property>
 <Property name="Salary">
-<AverageFieldSize>4.9</AverageFieldSize>
+<AverageFieldSize>4.89</AverageFieldSize>
 <Selectivity>1.0000%</Selectivity>
 </Property>
 <Property name="Spouse">
-<AverageFieldSize>1.94</AverageFieldSize>
-<Selectivity>1.6667%</Selectivity>
+<AverageFieldSize>1.93</AverageFieldSize>
+<Selectivity>1.5625%</Selectivity>
 </Property>
 <Property name="Title">
-<AverageFieldSize>20.51</AverageFieldSize>
-<Selectivity>1.5625%</Selectivity>
+<AverageFieldSize>20.19</AverageFieldSize>
+<Selectivity>1.4286%</Selectivity>
 </Property>
 <SQLMap name="$Employee">
 <BlockCount>-4</BlockCount>

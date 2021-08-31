@@ -1,4 +1,9 @@
-/// The <class>Vendor</class> class is a persistent class containing vendor information.<br>This class demonstrates how to use the <class>%CacheSQLStorage</class> storage class to provide custom storage for a persistent class. Typically the <class>%CacheSQLStorage</class> storage class is used to provide object access to previously existing storage structures.
+/// The <class>Vendor</class> class is a persistent class 
+/// containing vendor information.<br>
+/// This class demonstrates how to use the <class>%CacheSQLStorage</class> storage 
+/// class to provide custom storage for a persistent class. Typically the 
+/// <class>%CacheSQLStorage</class> storage class is used to provide object access 
+/// to previously existing storage structures.
 Class Sample.Vendor Extends (%Persistent, %Populate, %XML.Adaptor) [ SqlRowIdName = Vendor, StorageStrategy = SQLStorage ]
 {
 
@@ -54,28 +59,28 @@ Storage SQLStorage
 <Selectivity>1</Selectivity>
 </Property>
 <Property name="Address">
-<AverageFieldSize>36.52,City:7.24,State:2,Street:16.83,Zip:5</AverageFieldSize>
-<Selectivity>1.0000%,City:4.1667%,State:2.5000%,Street:1.0000%,Zip:1.0000%</Selectivity>
+<AverageFieldSize>36.14,City:7.14,State:2,Street:16.62,Zip:5</AverageFieldSize>
+<Selectivity>1.0000%,City:3.8462%,State:2.2727%,Street:1.0000%,Zip:1.0000%</Selectivity>
 </Property>
 <Property name="Balance">
-<AverageFieldSize>9.37</AverageFieldSize>
+<AverageFieldSize>9.4</AverageFieldSize>
 <Selectivity>1.0000%</Selectivity>
 </Property>
 <Property name="Contact">
-<AverageFieldSize>15.54</AverageFieldSize>
+<AverageFieldSize>15.97</AverageFieldSize>
 <Selectivity>1.0000%</Selectivity>
 </Property>
 <Property name="DaysClear">
-<AverageFieldSize>2.91</AverageFieldSize>
-<Selectivity>1.0417%</Selectivity>
+<AverageFieldSize>2.88</AverageFieldSize>
+<Selectivity>1.1111%</Selectivity>
 </Property>
 <Property name="DiscDays">
-<AverageFieldSize>2.87</AverageFieldSize>
-<Selectivity>1.0753%</Selectivity>
+<AverageFieldSize>2.92</AverageFieldSize>
+<Selectivity>1.0870%</Selectivity>
 </Property>
 <Property name="DiscRate">
-<AverageFieldSize>1.88</AverageFieldSize>
-<Selectivity>1.5873%</Selectivity>
+<AverageFieldSize>1.89</AverageFieldSize>
+<Selectivity>1.6667%</Selectivity>
 </Property>
 <Property name="LastInvDate">
 <AverageFieldSize>5</AverageFieldSize>
@@ -86,23 +91,23 @@ Storage SQLStorage
 <Selectivity>1.0000%</Selectivity>
 </Property>
 <Property name="MinPayment">
-<AverageFieldSize>5.9</AverageFieldSize>
+<AverageFieldSize>5.85</AverageFieldSize>
 <Selectivity>1.0000%</Selectivity>
 </Property>
 <Property name="Name">
-<AverageFieldSize>17.28</AverageFieldSize>
-<Selectivity>1.0000%</Selectivity>
+<AverageFieldSize>16.89</AverageFieldSize>
+<Selectivity>1.0309%</Selectivity>
 </Property>
 <Property name="NetDays">
-<AverageFieldSize>2.95</AverageFieldSize>
-<Selectivity>1.0870%</Selectivity>
+<AverageFieldSize>2.9</AverageFieldSize>
+<Selectivity>1.0309%</Selectivity>
 </Property>
 <Property name="PayFlag">
 <AverageFieldSize>1</AverageFieldSize>
 <Selectivity>50.0000%</Selectivity>
 </Property>
 <Property name="TaxReporting">
-<AverageFieldSize>.47</AverageFieldSize>
+<AverageFieldSize>.54</AverageFieldSize>
 <Selectivity>50.0000%</Selectivity>
 </Property>
 <SqlIdExpression>$i(^VendorData)</SqlIdExpression>

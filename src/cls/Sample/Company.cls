@@ -23,10 +23,34 @@ Property Revenue As %Integer;
 /// The <class>Employee</class> objects associated with this <class>Company</class>.
 Relationship Employees As Employee [ Cardinality = many, Inverse = Company ];
 
-/// This method prints out the payroll for this company by iterating over all the <class>Employee</class> objects related to it and printing their names and salaries.<br>You can try this out from the <i>Cach&eacute;</i> command line by opening an instance of <class>Company</class> object and invoking this method:<example>Set company = ##class(Sample.Company).%OpenId(1)Do company.PrintPayroll()</example>
+/// This method prints out the payroll for this company by iterating over 
+/// all the <class>Employee</class> objects related to it and printing 
+/// their names and salaries.<br>
+/// You can try this out from the <i>Cach&eacute;</i> command line by opening 
+/// an instance of <class>Company</class> object and invoking this method:
+/// <example>
+/// Set company = ##class(Sample.Company).%OpenId(1)
+/// 
+/// Do company.PrintPayroll()
+/// </example>
 Method PrintPayroll()
 {
-	Set total = 0	Set key = ""		Write !, "Payroll for ", ..Name, ":"		Do {		Set emp = ..Employees.GetNext(.key)		If (emp '= "") {			Set total = total + emp.Salary			Write !, ?5, emp.Name, ?40, $J($FN(emp.Salary,","),12)			Do ..Employees.%UnSwizzleAt(key)		}	} while (key '= "")		Write !, "Total: ", ?40, $J($FN(total,","),12)	Quit
+	Set total = 0
+	Set key = ""
+	
+	Write !, "Payroll for ", ..Name, ":"
+	
+	Do {
+		Set emp = ..Employees.GetNext(.key)
+		If (emp '= "") {
+			Set total = total + emp.Salary
+			Write !, ?5, emp.Name, ?40, $J($FN(emp.Salary,","),12)
+			Do ..Employees.%UnSwizzleAt(key)
+		}
+	} while (key '= "")
+	
+	Write !, "Total: ", ?40, $J($FN(total,","),12)
+	Quit
 }
 
 Storage Default
@@ -62,19 +86,19 @@ Storage Default
 <Selectivity>1</Selectivity>
 </Property>
 <Property name="Mission">
-<AverageFieldSize>95.1</AverageFieldSize>
+<AverageFieldSize>97.2</AverageFieldSize>
 <Selectivity>5.0000%</Selectivity>
 </Property>
 <Property name="Name">
-<AverageFieldSize>16.65</AverageFieldSize>
+<AverageFieldSize>16.15</AverageFieldSize>
 <Selectivity>5.0000%</Selectivity>
 </Property>
 <Property name="Revenue">
-<AverageFieldSize>8.9</AverageFieldSize>
+<AverageFieldSize>8.8</AverageFieldSize>
 <Selectivity>5.0000%</Selectivity>
 </Property>
 <Property name="TaxID">
-<AverageFieldSize>4.85</AverageFieldSize>
+<AverageFieldSize>4.8</AverageFieldSize>
 <Selectivity>1</Selectivity>
 </Property>
 <SQLMap name="IDKEY">
