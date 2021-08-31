@@ -9,8 +9,9 @@ Parameter INVOCATION = "Queue";
 
 Property batchSize As %Integer [ InitialExpression = 500 ];
 
-Parameter SETTINGS = "batchSize";
+Property SCHEMA As %String [ InitialExpression = "app" ];
 
+Parameter SETTINGS = "batchSize:JDBC,SCHEMA:app";
 
 Method OnInit() As %Status
 {
@@ -25,7 +26,6 @@ Method SELECT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 	set sc = $$$OK
 	
 	try{
-		
 		set pResponse = ##class(Ens.StringResponse).%New()
 		set query = ""
 		set query = query_"SELECT "
@@ -36,28 +36,25 @@ Method SELECT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 		set query = query_",active"
     	set query = query_",category"
 		set query = query_",created" 
-		set query = query_"FROM customer"
+		set query = query_" FROM "_ ..SCHEMA _".customer"
+		set query = query_" ORDER BY ID"
 		
 		Set start = $zh
 
-		$$$TRACE(sqlGetView)
+		$$$TRACE(query)
 			
-		$$$ThrowOnError(..Adapter.ExecuteQueryBatch(.rs,sqlGetView,..batchSize))
+		$$$ThrowOnError(..Adapter.ExecuteQueryBatch(.rs,query,..batchSize))
 		
-		While rs.%Next(){
+		while rs.%Next(){
 
-			set id = rs.Get("id")
-			if ##class(data.customer).%ExistsId(rs.Get("id")){
-				set customer = ##class(data.customer).%OpenId(id)
-			}
-			else {
-				set customer = ##class(data.customer).%New()
-			}
-			set customer.lastName = rs.Get("last_name")
-			set customer.firstName = rs.Get("first_name")
-			set customer.city = rs.Get("city")
-			set customer.category = rs.Get("category")
-			set customer.active = rs.Get("active")
+			set id = rs.%Get("id")
+			$$$TRACE(id)
+			set customer = ##class(data.customer).getRecord(id)
+			set customer.lastName = rs.%Get("last_name")
+			set customer.firstName = rs.%Get("first_name")
+			set customer.city = rs.%Get("city")
+			set customer.category = rs.%Get("category")
+			set customer.active = $SELECT(rs.%Get("active")="t":1,1:0)
 			$$$ThrowOnError(customer.%Save())
 
 			do $INCREMENT(records)
@@ -74,11 +71,44 @@ Method SELECT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 	return sc
 }
 
+Method test(pRequest As JDBC.demo.msg.test, Output pResponse As Ens.StringResponse) As %Status
+{
+	
+	set sc = $$$OK
+	
+	try{
+		set pResponse = ##class(Ens.StringResponse).%New()
+		set query = "",hasNext=""
+		set query = query_"SELECT count(*) as nb FROM "_ ..SCHEMA_".customer"
+
+		$$$TRACE(query)
+
+		$$$ThrowOnError(..Adapter.ExecuteQuery(.rs,query))
+
+		if rs.%Next() {
+			set nb = rs.%Get("nb")
+			$$$LOGINFO("nb:" _ nb)
+		} else {
+			$$$LOGINFO("NO DATA FOUND")
+		}
+		
+		set pResponse.StringValue = nb
+	}
+	catch exp
+	{
+		set sc = exp.AsStatus()
+	}
+	return sc
+}
+
 XData MessageMap
 {
 <MapItems>
 	<MapItem MessageType="Ens.StringRequest"> 
 		<Method>SELECT</Method>
+	</MapItem>
+	<MapItem MessageType="JDBC.demo.msg.test"> 
+		<Method>test</Method>
 	</MapItem>
 </MapItems>
 }

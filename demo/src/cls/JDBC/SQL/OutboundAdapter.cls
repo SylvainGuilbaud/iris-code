@@ -111,9 +111,12 @@ Method ExecuteUpdateBatchParamArray(Output pNumRowsAffected As %Integer, pUpdate
 	set tStatus = $$$OK
 	
 	try{
+		kill ^pParms
+		merge ^pParms=pParms
+		$$$LOGINFO("pUpdateStatement:"_pUpdateStatement_" nbParam:"_pParms(1,1)_" nbBatch:"_pParms(1))
 		
 		set pSQLStatement=pUpdateStatement
-
+		
 		// JDBCGwy is an instance of the JDBC Gateway object. EnsLib.SQL.OutboundAdapter instantiates this automatically and stores a reference to it in ..%Connection.%JGProxy
 
 		// Prepare the SQL statement
@@ -126,9 +129,10 @@ Method ExecuteUpdateBatchParamArray(Output pNumRowsAffected As %Integer, pUpdate
 		// ParamSets is the number of rows we will be inserting in this batch
 		// Type1, Type2, ..., TypeN is an integer indicating the JDBC data type for the corresponding Param value (e.g. Param1, Param2, ..., ParamN)
 		// Param1, Param2, ..., ParamN is the value for the query parameter
-
+		
 		set nbParam = pParms(1,1)
 		set nbBatch = pParms(1)
+		
 
 		set $LIST(tArgs,1)=nbParam // How many parameters ("?") in it
 		set $LIST(tArgs,2)=nbBatch // We will insert nbBatch rows in this batch
@@ -138,16 +142,15 @@ Method ExecuteUpdateBatchParamArray(Output pNumRowsAffected As %Integer, pUpdate
 		for k=1:1:nbBatch {
 			
 			
-			for l=1:1:pParms(1,k){
-				
+			for l=1:1:pParms(1,k){	
 				//Set the SqlType
 				set i = i +1
 				set $LIST(tArgs,i)=+$G(pParms(1,k,l,"SqlType"),+$G(pParms(1,k,l,"CType"),$$$SqlVarchar))
-
+				
 				//Set the value
 				set i = i +1
 				set $LIST(tArgs,i)=pParms(1,k,l) 
-				
+
 			}
 			
 		}

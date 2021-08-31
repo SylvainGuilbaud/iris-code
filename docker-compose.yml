@@ -7,6 +7,7 @@ services:
       context: .
     image: iris-demo:latest
     hostname: iris
+    container_name: iris
     volumes: 
     - "./demo/:/tmp/iris"
     ports:
@@ -18,7 +19,8 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
     volumes:
-       - ./volumes/postgresql:/var/lib/postgresql/data
+      - ./demo/postgreSQL:/docker-entrypoint-initdb.d/
+      - ./volumes/postgresql:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
@@ -27,18 +29,18 @@ services:
         interval: 30s
         timeout: 30s
         retries: 3
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-       - ./volumes/pgadmin:/var/lib/pgadmin
-    ports:
-      - "8090:80"
-    restart: unless-stopped
+  # pgadmin:
+  #   container_name: pgadmin
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #     PGADMIN_CONFIG_SERVER_MODE: 'False'
+  #   volumes:
+  #      - ./volumes/pgadmin:/var/lib/pgadmin
+  #   ports:
+  #     - "8090:80"
+  #   restart: unless-stopped
 #   dbmysql:
 #     image: mysql:latest
 #     hostname: mysql

@@ -5,7 +5,7 @@ zn "USER"
 
 zw $SYSTEM.OBJ.ImportDir("/tmp/iris/src", "*.cls", "ck", .tErrors, 1)
 
-zw ##class(Ens.Config.Credentials).SetCredential("PostgreSQL","demo","demo",1)
+zw ##class(Ens.Config.Credentials).SetCredential("PostgreSQL","postgres","postgres",1)
 
 zw ##class(Ens.Director).SetAutoStart("JDBC.demo.production")
 
