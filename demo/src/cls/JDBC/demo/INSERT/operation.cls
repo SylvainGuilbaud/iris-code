@@ -214,7 +214,7 @@ Method customers(pRequest As data.RM.customer.Batch, Output pResponse As Ens.Str
 			}	
 		} 
 
-	set pResponse.StringValue = nbInserted
+	set pResponse.StringValue = nbInserted_" successfully inserted"
 		
 	}
 	catch exp
@@ -243,6 +243,7 @@ Method customersTransformed(pRequest As data.EXTERNAL.customer.Batch, Output pRe
 			set customer.firstName	= pRequest.records.GetAt(i).firstName
 			set customer.lastName	= pRequest.records.GetAt(i).lastName
 			set customer.hashtag = pRequest.records.GetAt(i).hashtag
+			set customer.gender = pRequest.records.GetAt(i).gender
 			set sc = ..insertUpdate(customer)
 			if sc {
 				do $INCREMENT(nbInserted) 
@@ -251,7 +252,7 @@ Method customersTransformed(pRequest As data.EXTERNAL.customer.Batch, Output pRe
 			}	
 		} 
 
-	set pResponse.StringValue = nbInserted
+	set pResponse.StringValue = nbInserted_" successfully inserted"
 		
 	}
 	catch exp
@@ -278,7 +279,8 @@ Method insertUpdate(pRequest As JDBC.demo.msg.customerRequest, Output pResponse 
 		set insertQuery = insertQuery_" ,created"
 		set insertQuery = insertQuery_" ,first_name"
 		set insertQuery = insertQuery_" ,last_name "
-		set insertQuery = insertQuery_" ,hashtag "
+		set insertQuery = insertQuery_" ,gender "
+		set:pRequest.hashtag'="" insertQuery = insertQuery_" ,hashtag "
 		set insertQuery = insertQuery_" ) " 
 		set insertQuery = insertQuery_" values ("
 		set insertQuery = insertQuery_"  ?"
@@ -288,8 +290,9 @@ Method insertUpdate(pRequest As JDBC.demo.msg.customerRequest, Output pResponse 
 		set insertQuery = insertQuery_" ,?"
 		set insertQuery = insertQuery_" ,?"
 		set insertQuery = insertQuery_" ,?"
-		set insertQuery = insertQuery_" ,?::bytea"
-		set insertQuery = insertQuery_" )"
+		set insertQuery = insertQuery_" ,?"
+		set:pRequest.hashtag'="" insertQuery = insertQuery_" ,?::bytea"
+		set insertQuery = insertQuery_")"
 
 		set updateQuery = ""
 		set updateQuery = updateQuery_"UPDATE "_ ..SCHEMA _".customer "
@@ -299,15 +302,16 @@ Method insertUpdate(pRequest As JDBC.demo.msg.customerRequest, Output pResponse 
 		set updateQuery = updateQuery_" ,city = ?"
 		set updateQuery = updateQuery_" ,created = ?"
 		set updateQuery = updateQuery_" ,first_name = ?"
-		set updateQuery = updateQuery_" ,last_name = ? "
-		set updateQuery = updateQuery_" ,hashtag = ?::bytea "
+		set updateQuery = updateQuery_" ,last_name = ?"
+		set updateQuery = updateQuery_" ,gender = ?"
+		set:pRequest.hashtag'="" updateQuery = updateQuery_" ,hashtag = ?::bytea"
 		set updateQuery = updateQuery_" ,lastUpdate = '"_$zdt($h,3)_"'" 
 		set updateQuery = updateQuery_" WHERE "
 		set updateQuery = updateQuery_"  id = "_pRequest.id
 
 		$$$TRACE(insertQuery)
 		$$$TRACE(updateQuery)
-		#; id,active,category,city,created,firstName,lastName
+
 		set id=pRequest.id
 		set active=pRequest.active
 		set category=pRequest.category
@@ -316,11 +320,20 @@ Method insertUpdate(pRequest As JDBC.demo.msg.customerRequest, Output pResponse 
 		set firstName=pRequest.firstName
 		set lastName=pRequest.lastName
 		set hashtag=pRequest.hashtag
+		set gender=pRequest.gender
 
-		if ..customerExists(pRequest.id) {
-			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,updateQuery,active,category,city,created,firstName,lastName,hashtag))		
-		} else {
-			$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,id,active,category,city,created,firstName,lastName,hashtag))
+		if ..customerExists(pRequest.id) { // UPDATE
+			if pRequest.hashtag'="" {
+				$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,updateQuery,active,category,city,created,firstName,lastName,gender,hashtag))
+			} else {
+				$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,updateQuery,active,category,city,created,firstName,lastName,gender))
+			}		
+		} else { // INSERT
+			if hashtag'="" {
+				$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,id,active,category,city,created,firstName,lastName,gender,hashtag))
+			} else {
+				$$$ThrowOnError(..Adapter.ExecuteUpdate(.nrows,insertQuery,id,active,category,city,created,firstName,lastName,gender))
+			}
 		}
 		if sc {
 			$$$TRACE(nrows_" inserted")
@@ -459,11 +472,11 @@ XData MessageMap
 	<MapItem MessageType="JDBC.demo.msg.testBatch"> 
 		<Method>testBatch</Method>
 	</MapItem>
-	<MapItem MessageType="data.RM.customer.Batch"> 
-		<Method>customers</Method>
-	</MapItem>
 	<MapItem MessageType="JDBC.demo.msg.customerRequest"> 
 		<Method>insertUpdate</Method>
+	</MapItem>
+	<MapItem MessageType="data.RM.customer.Batch"> 
+		<Method>customers</Method>
 	</MapItem>
 	<MapItem MessageType="data.EXTERNAL.customer.Batch"> 
 		<Method>customersTransformed</Method>

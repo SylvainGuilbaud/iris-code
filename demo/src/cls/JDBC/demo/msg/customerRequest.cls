@@ -17,6 +17,10 @@ Property created As %TimeStamp [ InitialExpression = {$zdt($h-$RANDOM(1000)_","_
 
 Property hashtag As %String(MAXLEN = "");
 
+Property gender As %String;
+
+Property country As %String;
+
 Storage Default
 {
 <Data name="customerRequestDefaultData">
@@ -44,6 +48,12 @@ Storage Default
 </Value>
 <Value name="8">
 <Value>hashtag</Value>
+</Value>
+<Value name="9">
+<Value>gender</Value>
+</Value>
+<Value name="10">
+<Value>country</Value>
 </Value>
 </Data>
 <DefaultData>customerRequestDefaultData</DefaultData>

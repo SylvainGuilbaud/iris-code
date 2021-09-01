@@ -17,6 +17,10 @@ Property lastName As %String;
 
 Property hashtag As %String(MAXLEN = 20);
 
+Property gender As %String;
+
+Property country As %String;
+
 Storage Default
 {
 <Data name="RecordState">
@@ -43,6 +47,12 @@ Storage Default
 </Value>
 <Value name="8">
 <Value>hashtag</Value>
+</Value>
+<Value name="9">
+<Value>gender</Value>
+</Value>
+<Value name="10">
+<Value>country</Value>
 </Value>
 </Data>
 <State>RecordState</State>

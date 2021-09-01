@@ -111,9 +111,9 @@ Method ExecuteUpdateBatchParamArray(Output pNumRowsAffected As %Integer, pUpdate
 	set tStatus = $$$OK
 	
 	try{
-		kill ^pParms
-		merge ^pParms=pParms
-		$$$LOGINFO("pUpdateStatement:"_pUpdateStatement_" nbParam:"_pParms(1,1)_" nbBatch:"_pParms(1))
+		#; kill ^pParms
+		#; merge ^pParms=pParms
+		#; $$$LOGINFO("pUpdateStatement:"_pUpdateStatement_" nbParam:"_pParms(1,1)_" nbBatch:"_pParms(1))
 		
 		set pSQLStatement=pUpdateStatement
 		
