@@ -15,6 +15,10 @@ Property active As %Boolean [ InitialExpression = 1 ];
 
 Property created As %TimeStamp [ InitialExpression = {$zdt($h,3)} ];
 
+Property gender As %String;
+
+Property hashtag As %String(MAXLEN = "");
+
 Index idKey On originID [ Unique ];
 
 Index firstNameIdx On firstName [ Type = index ];
@@ -26,6 +30,8 @@ Index categoryIdx On category [ Type = bitmap ];
 Index cityIdx On city [ Type = bitmap ];
 
 Index activeIdx On active [ Type = bitmap ];
+
+Index genderIdx On gender [ Type = bitmap ];
 
 Index createdIdx On created [ Type = index ];
 
@@ -68,6 +74,12 @@ Storage Default
 </Value>
 <Value name="8">
 <Value>created</Value>
+</Value>
+<Value name="9">
+<Value>gender</Value>
+</Value>
+<Value name="10">
+<Value>hashtag</Value>
 </Value>
 </Data>
 <DataLocation>^data.customerD</DataLocation>

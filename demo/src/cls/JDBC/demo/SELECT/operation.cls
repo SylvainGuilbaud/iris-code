@@ -36,6 +36,8 @@ Method SELECT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 		set query = query_",active"
     	set query = query_",category"
 		set query = query_",created" 
+		set query = query_",gender"
+		set query = query_",hashtag" 
 		set query = query_" FROM "_ ..SCHEMA _".customer"
 		set query = query_" ORDER BY ID"
 		
@@ -55,6 +57,8 @@ Method SELECT(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespo
 			set customer.city = rs.%Get("city")
 			set customer.category = rs.%Get("category")
 			set customer.active = $SELECT(rs.%Get("active")="t":1,1:0)
+			set customer.gender = rs.%Get("gender")
+			set customer.hashtag = rs.%Get("hashtag")
 			$$$ThrowOnError(customer.%Save())
 
 			do $INCREMENT(records)

@@ -38,8 +38,8 @@ Method gender(pRequest As HTTP.msg.genderRequest, Output pResponse As HTTP.msg.g
         set pResponse.probability=json.probability
         set pResponse.count=json.count
 
-        $$$LOGINFO(json.%ToJSON())
-        $$$LOGINFO("gender:"_pResponse.gender)
+        $$$TRACE(json.%ToJSON())
+        $$$TRACE("gender:"_pResponse.gender)
 
 	} catch exp{
 		set sc = exp.AsStatus()
