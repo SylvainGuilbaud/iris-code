@@ -1,5 +1,5 @@
 /// RECORDMAP: Modified during compilation of RecordMap 'data.RM.customer'
-/// on 2021-08-31 at 16:54:34.223 [2021-08-31 16:54:34.223 UTC]
+/// on 2021-09-02 at 20:21:34.023 [2021-09-02 20:21:34.023 UTC]
 /// by user _SYSTEM
 Class data.RM.customer Extends EnsLib.RecordMap.RecordMap
 {

@@ -1,0 +1,26 @@
+zn "%SYS"
+Do ##class(Security.Users).UnExpireUserPasswords("*")
+
+zn "APP"
+do ##class(%EnsembleMgr).EnableNamespace("APP")
+
+set app = "WebTerminal-v4.9.3"
+write $system.OBJ.Load("/tmp/iris/xml/"_app_".xml","ck",.errors)
+merge ^initErrors(app)=errors
+kill errors
+
+set app = "zpm-0.2.10" 
+write $system.OBJ.Load("/tmp/iris/xml/"_app_".xml","ck",.errors)
+merge ^initErrors(app)=errors
+kill errors
+
+set app = "/tmp/iris/src" 
+write $SYSTEM.OBJ.ImportDir(app, "*.cls", "ck", .errors, 1)    
+merge ^initErrors(app)=errors
+kill errors
+
+zw ##class(Ens.Config.Credentials).SetCredential("PostgreSQL","postgres","postgres",1)
+
+zw ##class(Ens.Director).SetAutoStart("JDBC.demo.production")
+
+h

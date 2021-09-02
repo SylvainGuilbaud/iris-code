@@ -1,4 +1,8 @@
-FROM intersystems/irishealth-ml-community:2021.1.0.215.0
+ARG IMAGE=containers.intersystems.com/intersystems/iris-community:2021.1.0.215.0
+# ARG IMAGE=containers.intersystems.com/intersystems/iris-ml-community:2021.1.0.215.0
+# ARG IMAGE=containers.intersystems.com/intersystems/irishealth-community:2021.1.0.215.0
+# ARG IMAGE=containers.intersystems.com/intersystems/irishealth-ml-community:2021.1.0.215.0
+FROM $IMAGE
 COPY ./demo /tmp/iris
 COPY ./jdbc/postgresql-42.2.23.jar /opt/postgresql-42.2.23.jar
 USER irisowner

@@ -1,5 +1,5 @@
 /// RECORDMAP: Generated from RecordMap 'data.RM.customer'
-/// on 2021-08-31 at 16:54:34.205 [2021-08-31 16:54:34.205 UTC]
+/// on 2021-09-02 at 20:21:33.974 [2021-09-02 20:21:33.974 UTC]
 /// by user _SYSTEM
 Class data.RM.customer.Record Extends (%Persistent, %XML.Adaptor, Ens.Request, EnsLib.RecordMap.Base) [ Inheritance = right, ProcedureBlock ]
 {
@@ -19,12 +19,6 @@ Property created As %TimeStamp [ SqlColumnNumber = 6 ];
 Property firstName As %String [ SqlColumnNumber = 7 ];
 
 Property lastName As %String [ SqlColumnNumber = 8 ];
-
-Parameter RECORDMAPGENERATED = 1;
-
-Relationship %ParentBatch As data.RM.customer.Batch [ Cardinality = one, Inverse = Records ];
-
-Index %ParentBatchIdx On %ParentBatch;
 
 Storage Default
 {
@@ -68,5 +62,11 @@ Storage Default
 <StreamLocation>^data.RM.customer.RecordS</StreamLocation>
 <Type>%Storage.Persistent</Type>
 }
+
+Parameter RECORDMAPGENERATED = 1;
+
+Relationship %ParentBatch As data.RM.customer.Batch [ Cardinality = one, Inverse = Records ];
+
+Index %ParentBatchIdx On %ParentBatch;
 
 }

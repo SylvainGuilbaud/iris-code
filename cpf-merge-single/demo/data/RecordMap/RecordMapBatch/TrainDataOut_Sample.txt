@@ -1,0 +1,6 @@
+Date,TrainID,Direction,Station,Time
+12/09/2015,9266,South,Charles/MGH,17:13:07
+12/09/2015,2666,North,South Station,17:12:48
+12/09/2015,3612,North,Porter Square,17:13:07
+12/09/2015,329,North,Central Square,17:13:10
+12/09/2015,6232,South,North Quincy,17:12:56

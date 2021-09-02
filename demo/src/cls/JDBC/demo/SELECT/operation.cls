@@ -83,7 +83,7 @@ Method test(pRequest As JDBC.demo.msg.test, Output pResponse As Ens.StringRespon
 	try{
 		set pResponse = ##class(Ens.StringResponse).%New()
 		set query = "",hasNext=""
-		set query = query_"SELECT count(*) as nb FROM "_ ..SCHEMA_".customer"
+		set query = query_"SELECT count(*) as nb FROM "_ ..SCHEMA_"."_pRequest.tablename
 
 		$$$TRACE(query)
 

@@ -8,8 +8,12 @@ services:
     image: iris-demo:2021.1.0.215.0
     hostname: iris
     container_name: iris
+    environment:
+      - ISC_DATA_DIRECTORY=/ISC/iris.sys
+      # - ISC_CPF_MERGE_FILE=/ISC/iris.conf
     volumes: 
-    - "./demo/:/tmp/iris"
+    - ./demo/:/tmp/iris
+    - ./demo/ISC/:/ISC
     ports:
     - 52000:52773
     - 51000:1972

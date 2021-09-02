@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  iris:
+    build:
+      context: .
+    image: iris
+    command: ["--key", "/ISC/iris.key"]
+    hostname: iris
+    container_name: iris
+    init: true
+    ports:
+      - "9011:1972"
+      - "9012:52773"
+    environment:
+      - ISC_DATA_DIRECTORY=/ISC/iris.sys
+      - ISC_CPF_MERGE_FILE=/ISC/iris.conf
+    volumes:
+      - ./:/ISC

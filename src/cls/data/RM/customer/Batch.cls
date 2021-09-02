@@ -1,5 +1,5 @@
 /// RECORDMAP: Modified during compilation of RecordMap 'data.RM.customer'
-/// on 2021-08-31 at 16:54:34.212 [2021-08-31 16:54:34.212 UTC]
+/// on 2021-09-02 at 20:21:34.015 [2021-09-02 20:21:34.015 UTC]
 /// by user _SYSTEM
 Class data.RM.customer.Batch Extends (%Persistent, %XML.Adaptor, Ens.Request, EnsLib.RecordMap.Batch) [ Inheritance = right, ProcedureBlock ]
 {

@@ -1,3 +1,6 @@
 **/.DS_Store
+**/iris.key
 keys/
 volumes/
+**/ISC
+**/iris.sys
