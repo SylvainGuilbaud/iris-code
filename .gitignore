@@ -3,4 +3,4 @@
 keys/
 volumes/
 **/ISC
-**/iris.sys
+**/iris.sys*/*
