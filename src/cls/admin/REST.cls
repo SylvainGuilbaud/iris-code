@@ -144,19 +144,35 @@ ClassMethod nb(classname As %String) As %Status
     set sc=$$$OK
     set %response.ContentType="application/json"
     set json={}
-    set json.classname=classname
-    set class=##class(%Dictionary.CompiledClass).%OpenId(classname)
-    set json.tableName=class.SqlSchemaName_"."_class.SqlTableName
-    set tStatement=##class(%SQL.Statement).%New(1) 
-    set sql = 2
-    set sql(1) = "select count(*)" 
-    set sql(2) = "from "_json.tableName
-    set sc = tStatement.%Prepare(.sql) 
-    set result = tStatement.%Execute() 
-    if 'result.%SQLCODE {  
-        do result.%Next()
-        set json.nb=result.%GetData(1)
+    set sql($i(sql))="SELECT"
+    set sql($i(sql))="ID"
+    set sql($i(sql))="FROM"
+    set sql($i(sql))="%Dictionary.CompiledClass"
+    set sql($i(sql))="WHERE LCASE(ID)=?"
+    set result=##class(%SQL.Statement).%ExecDirect(,.sql,$zcvt(classname,"L"))
+    if result.%SQLCODE=0 {
+        do result.%Next() 
+        if result.%SQLCODE=0 {
+            set json.classname=result.%Get("ID")
+            set class=##class(%Dictionary.CompiledClass).%OpenId(json.classname)
+            set json.tableName=class.SqlSchemaName_"."_class.SqlTableName
+            set tStatement=##class(%SQL.Statement).%New(1) 
+            kill sql
+            set sql($i(sql)) = "select count(*)" 
+            set sql($i(sql)) = "from "_json.tableName
+            set sc = tStatement.%Prepare(.sql) 
+            set result = tStatement.%Execute() 
+            if 'result.%SQLCODE {  
+                do result.%Next()
+                set json.nb=result.%GetData(1)
+            }
+        } else {
+            set json.error="NO CLASSNAME FOUND for "_(classname)_" (SQLCODE:"_result.%SQLCODE_")"
+        }
+    } else {
+        set json.error="NO CLASSNAME FOUND for "_(classname)_" (SQLCODE:"_result.%SQLCODE_")"
     }
+    
     set json.elapse=$zh-start
     do json.%ToJSON()
     return sc
