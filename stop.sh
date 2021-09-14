@@ -1,6 +1,4 @@
 #!/bin/bash
 
-docker-compose -p m down
-
-cd demo
-./demo/deleteDurableSYS.sh
+docker-compose -p iris-code down
+./deleteDurableSYS.sh

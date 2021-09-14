@@ -6,6 +6,41 @@ Include utils
 Class utils.functions
 {
 
+ClassMethod getClassName(schema As %String = "", tablename As %String = "", ByRef sc As %Status, verbose As %Boolean = 1) As %String [ SqlProc ]
+{
+    Try {
+        set ClassName=""
+        set:schema="" schema=$SYSTEM.SQL.Schema.Default()
+        set schema=$ZCVT(schema,"L")
+        set tablename = $ZCVT(tablename,"L")
+        if tablename'="" {
+            set sql($i(sql))="SELECT"
+            set sql($i(sql))="ID"
+            set sql($i(sql))=",SqlSchemaName"
+            set sql($i(sql))=",SqlTableName"
+            set sql($i(sql))="FROM %Dictionary.CompiledClass"
+            set sql($i(sql))="where LCASE(SqlSchemaName) = ? and LCASE(SqlTableName) = ?"
+            set result=##class(%SQL.Statement).%ExecDirect(,.sql,schema,tablename)
+            if result.%SQLCODE=0 {
+                do result.%Next()
+                if result.%SQLCODE=0 {
+                    set ClassName = result.%Get("ID")
+                    set SqlSchemaName = result.%Get("SqlSchemaName")
+                    set SqlTableName = result.%Get("SqlTableName")
+                    write:verbose ClassName, " is the ClassName for table ",SqlTableName," in schema ",SqlSchemaName,!
+                } else {
+                    write:verbose "No ClassName found for table ",tablename," in schema ",schema," (SQLCODE:",result.%SQLCODE,")",!
+                }
+            } 
+        } else {
+            set sc=$system.Status.Error("5001","tablename is required")
+        }
+    } catch ex {
+        set sc=ex.AsStatus()
+    }
+    return ClassName
+}
+
 ClassMethod median(colname As %String = "age", tablename As %String = "sample.person") As %Numeric [ ExternalProcName = median, SqlProc ]
 {
     Try {

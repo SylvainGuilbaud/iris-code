@@ -1,0 +1,21 @@
+zn "%SYS"
+Do ##class(Security.Users).UnExpireUserPasswords("*")
+
+zn "USER"
+
+set app = "WebTerminal-v4.9.3"
+write $system.OBJ.Load("/tmp/iris/xml/"_app_".xml","ck",.errors)
+merge ^initErrors(app)=errors
+kill errors
+
+set app = "zpm-0.2.10" 
+write $system.OBJ.Load("/tmp/iris/xml/"_app_".xml","ck",.errors)
+merge ^initErrors(app)=errors
+kill errors
+
+set app = "/tmp/iris/cls" 
+write $SYSTEM.OBJ.ImportDir(app, "*.cls", "ck", .errors, 1)    
+merge ^initErrors(app)=errors
+kill errors
+
+h

@@ -1,0 +1,10 @@
+1       Joe                      R.                       Schaefer                      1926-06-05489-45-23555162 Second Blvd              Hialeah                  CT13993
+2       Janice                   F.                       King                          1999-08-27666-19-46368189 Clinton Place            Bensonhurst              NV43325
+3       Juanita                  K.                       Bachman                       1966-02-26859-55-12475986 Maple Drive              Hialeah                  WI59144
+4       Tara                     E.                       Ott                           1935-05-31602-19-11387584 Elm Drive                Queensbury               IA64538
+5       George                   P.                       Ingleman                      1962-04-23194-12-88887873 Elm Court                Gansevoort               NY87774
+6       Maureen                  W.                       Hills                         1978-09-01562-22-83806293 Franklin Blvd            Larchmont                SD26493
+7       Angelo                   K.                       Hammel                        1998-01-13855-36-73063282 Clinton Street           Fargo                    LA85268
+8       Quentin                  L.                       Vonnegut                      2009-11-30685-19-65588078 Oak Blvd                 Newton                   MS65764
+9       Thelma                   J.                       Presley                       1945-03-12740-41-9621905 Oak Drive                 Ukiah                    SC10824
+10      Robert                   L.                       Xerxes                        1966-01-09815-19-87075027 Ash Street               Fargo                    MT11528

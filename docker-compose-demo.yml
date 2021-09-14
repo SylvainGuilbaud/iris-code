@@ -12,27 +12,27 @@ services:
       - ISC_DATA_DIRECTORY=/ISC/iris.sys
       # - ISC_CPF_MERGE_FILE=/ISC/iris.conf
     volumes: 
-    - ./volumes/data:/data
-    - ./volumes/ISC/:/ISC
+    - ./demo/:/tmp/iris
+    - ./demo/ISC/:/ISC
     ports:
     - 52000:52773
     - 51000:1972
-  # postgres:
-  #   container_name: postgres
-  #   image: postgres:13.4-alpine3.14
-  #   environment:
-  #     POSTGRES_PASSWORD: postgres
-  #   volumes:
-  #     - ./demo/postgreSQL:/docker-entrypoint-initdb.d/
-  #     - ./volumes/postgresql:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
-  #   restart: unless-stopped
-  #   healthcheck:
-  #       test: ["CMD", "pg_isready", "-U", "postgres"]
-  #       interval: 30s
-  #       timeout: 30s
-  #       retries: 3
+  postgres:
+    container_name: postgres
+    image: postgres:13.4-alpine3.14
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./demo/postgreSQL:/docker-entrypoint-initdb.d/
+      - ./volumes/postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+        test: ["CMD", "pg_isready", "-U", "postgres"]
+        interval: 30s
+        timeout: 30s
+        retries: 3
   # pgadmin:
   #   container_name: pgadmin
   #   image: dpage/pgadmin4

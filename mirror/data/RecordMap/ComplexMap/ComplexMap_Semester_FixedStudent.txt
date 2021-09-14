@@ -1,0 +1,4 @@
+SEM|194 2012Fall      203    
+STU|12345    Adams                    John                Michael             2 john.michael.adams@example.com          333-333-3333        
+STU|12346    Adams                    Jane                Michelle            3 jane.michelle.adams@example.com                             
+STU|12347    Jones                    Robert              Alfred              1 bobby.jones@example.com                 444-444-4444        
