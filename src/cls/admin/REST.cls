@@ -144,6 +144,10 @@ ClassMethod nb(classname As %String) As %Status
     set sc=$$$OK
     set %response.ContentType="application/json"
     set json={}
+    if classname'["." {
+        set schema="User"
+        set classname=schema_"."_classname
+    }
     set sql($i(sql))="SELECT"
     set sql($i(sql))="ID"
     set sql($i(sql))="FROM"
