@@ -167,10 +167,10 @@ ClassMethod nb(classname As %String) As %Status
                 set json.nb=result.%GetData(1)
             }
         } else {
-            set json.error="NO CLASSNAME FOUND for "_(classname)_" (SQLCODE:"_result.%SQLCODE_")"
+            set json.error="NO CLASSNAME FOUND for "_(classname)_" (SQLCODE:"_(result.%SQLCODE)_")"
         }
     } else {
-        set json.error="NO CLASSNAME FOUND for "_(classname)_" (SQLCODE:"_result.%SQLCODE_")"
+        set json.error="NO CLASSNAME FOUND for "_(classname)_" (SQLCODE:"_(result.%SQLCODE)_")"
     }
     
     set json.elapse=$zh-start
