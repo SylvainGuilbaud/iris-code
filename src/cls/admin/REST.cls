@@ -451,6 +451,7 @@ ClassMethod version() As %Status
     set json.lang=($listget(nls,2))
     set json.JavaHomeDirectory=$SYSTEM.Util.JavaHomeDirectory()
     set json.JavaExe=$SYSTEM.Util.JavaExe()
+    #; set json.StartProd=$$$TEXT("StartProd","Confirm","fr")
     do json.%ToJSON()
     #; write "Hello "_$USERNAME
     return sc

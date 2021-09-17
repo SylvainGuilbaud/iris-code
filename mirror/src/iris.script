@@ -1,0 +1,24 @@
+zn "%SYS"
+Do ##class(Security.Users).UnExpireUserPasswords("*")
+
+zn "USER"
+
+do $SYSTEM.OBJ.Load("/tmp/src/Installer.cls", "ck")
+set sc = ##class(Demo.Installer).setup()
+
+set app = "WebTerminal-v4.9.3"
+write $system.OBJ.Load("/tmp/src/xml/"_app_".xml","ck",.errors)
+merge ^initErrors(app)=errors
+kill errors
+
+set app = "zpm-0.2.10" 
+write $system.OBJ.Load("/tmp/src/xml/"_app_".xml","ck",.errors)
+merge ^initErrors(app)=errors
+kill errors
+
+set app = "/tmp/src/Demo" 
+write $SYSTEM.OBJ.ImportDir(app, "*.cls", "ck", .errors, 1)    
+merge ^initErrors(app)=errors
+kill errors
+
+h

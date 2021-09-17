@@ -1,0 +1,74 @@
+version: '3.7'
+
+services:
+  arbiter:
+    image: containers.intersystems.com/intersystems/arbiter:2021.1.0.215.0
+    init: true
+    command: 
+      - /usr/local/etc/irissys/startISCAgent.sh 2188
+    hostname: arbiter
+
+  mirrorA:
+    build: .
+    image: demoapp
+    init: true
+    hostname: mirrorA
+    environment: 
+      - IRIS_MIRROR_ROLE=main
+      - IRIS_MIRROR_ARBITER=arbiter
+      - ISC_DATA_DIRECTORY=/ISC/irisA.sys
+    ports:
+      - 9092:52773
+    volumes: 
+      - ./iris.key:/tmp/iris.key
+      - ./init_mirror.sh:/tmp/init_mirror.sh
+      - ./backup:/opt/backup
+      - ./volumes/irisA/:/ISC
+    command:
+      --key /tmp/iris.key
+      -a /tmp/init_mirror.sh
+
+  mirrorB:
+    image: demoapp
+    init: true
+    hostname: mirrorB
+    ports:
+      - 9093:52773
+    environment: 
+      - IRIS_MIRROR_ROLE=backup
+      - IRIS_MIRROR_AGENT=mirrorA
+      - ISC_DATA_DIRECTORY=/ISC/irisB.sys
+    volumes: 
+      - ./iris.key:/tmp/iris.key
+      - ./init_mirror.sh:/tmp/init_mirror.sh
+      - ./backup:/opt/backup
+      - ./volumes/irisB/:/ISC
+    command:
+      --key /tmp/iris.key
+      -a /tmp/init_mirror.sh
+
+  loadbalance:
+    build: ./webgateway
+    depends_on:
+      - mirrorA
+      - mirrorB
+      - arbiter
+    image: loadbalance
+    ports:
+    - "443:443"
+    - 80:80
+    environment:
+      - ISC_DATA_DIRECTORY=/durable/webgateway
+      - IRIS_USER=CSPsystem
+      - IRIS_PASSWORD=SYS
+    volumes:
+      - "./webgateway:/durable"
+
+networks:
+  app_net:
+    ipam:
+      driver: default
+
+volumes:
+  backup:
+    
