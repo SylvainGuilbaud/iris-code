@@ -13,7 +13,7 @@ Method test(pRequest As Ens.StringRequest, Output pResponse As Ens.StringRespons
 	
 	try{
 		set pResponse = ##class(Ens.StringResponse).%New()
-		set query = "",hasNext=""
+		set query = ""
 		set query = query_"SELECT count(*) as nb FROM "_pRequest.StringValue
 
 		$$$TRACE(query)
