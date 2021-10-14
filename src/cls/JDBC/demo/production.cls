@@ -12,7 +12,7 @@ XData ProductionDefinition
     <Setting Target="Host" Name="BatchClass">data.RM.customer.Batch</Setting>
     <Setting Target="Host" Name="RecordMap">data.RM.customer</Setting>
     <Setting Target="Host" Name="TargetConfigNames">MAJ clients base externe,archive fichiers clients</Setting>
-    <Setting Target="Adapter" Name="FilePath">/tmp/iris/in</Setting>
+    <Setting Target="Adapter" Name="FilePath">/data/in</Setting>
     <Setting Target="Adapter" Name="FileSpec">*.csv</Setting>
     <Setting Target="Host" Name="BatchHandling">Whole</Setting>
   </Item>
@@ -20,7 +20,7 @@ XData ProductionDefinition
     <Setting Target="Host" Name="BatchClass">data.RM.customer.Batch</Setting>
     <Setting Target="Host" Name="RecordMap">data.RM.customer</Setting>
     <Setting Target="Host" Name="TargetConfigNames">routage + transfo clients</Setting>
-    <Setting Target="Adapter" Name="FilePath">/tmp/iris/in+transfo/</Setting>
+    <Setting Target="Adapter" Name="FilePath">/data/in+transfo/</Setting>
     <Setting Target="Adapter" Name="FileSpec">*.csv</Setting>
     <Setting Target="Host" Name="BatchHandling">Whole</Setting>
   </Item>
@@ -28,7 +28,7 @@ XData ProductionDefinition
     <Setting Target="Host" Name="BatchClass">data.RM.customer.Batch</Setting>
     <Setting Target="Host" Name="RecordMap">data.RM.customer</Setting>
     <Setting Target="Host" Name="TargetConfigNames">transfo + traitements fichiers clients</Setting>
-    <Setting Target="Adapter" Name="FilePath">/tmp/iris/in+transfo+traitements/</Setting>
+    <Setting Target="Adapter" Name="FilePath">/data/in+transfo+traitements/</Setting>
     <Setting Target="Adapter" Name="FileSpec">*.csv</Setting>
     <Setting Target="Host" Name="BatchHandling">Whole</Setting>
   </Item>
@@ -64,8 +64,23 @@ XData ProductionDefinition
   </Item>
   <Item Name="archive fichiers clients" Category="archive" ClassName="EnsLib.RecordMap.Operation.BatchFileOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="true" Schedule="">
     <Setting Target="Host" Name="Filename">%Q_%f</Setting>
-    <Setting Target="Adapter" Name="FilePath">/tmp/iris/out/</Setting>
+    <Setting Target="Adapter" Name="FilePath">/data/out/</Setting>
     <Setting Target="Host" Name="RecordMap">data.RM.customer</Setting>
+  </Item>
+  <Item Name="myProcess" Category="" ClassName="process.myProcess" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="true" Schedule="">
+    <Setting Target="Host" Name="MyParam">CFAO</Setting>
+    <Setting Target="Host" Name="MyParamClient">CFAO Client</Setting>
+    <Setting Target="Host" Name="MyParamServer">CFAO Server</Setting>
+  </Item>
+  <Item Name="multi calls gender" Category="" ClassName="process.multiAsyncCallsOfOneTarget" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="true" Schedule="">
+  </Item>
+  <Item Name="JDBC.operation.TEST" Category="" ClassName="JDBC.operation.TEST" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Adapter" Name="DSN">jdbc:IRIS://127.0.0.1:1972/USER</Setting>
+    <Setting Target="Adapter" Name="JDBCDriver">com.intersystems.jdbc.IRISDriver</Setting>
+    <Setting Target="Adapter" Name="JDBCClasspath">/opt/intersystems-jdbc-3.2.0.jar</Setting>
+    <Setting Target="Adapter" Name="Credentials">IRIS</Setting>
+    <Setting Target="Adapter" Name="JGService">JG</Setting>
+    <Setting Target="Host" Name="SCHEMA">data</Setting>
   </Item>
 </Production>
 }
